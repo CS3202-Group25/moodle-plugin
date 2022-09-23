@@ -1,0 +1,1 @@
+FROM pabasaradilshan/moodle:latest
