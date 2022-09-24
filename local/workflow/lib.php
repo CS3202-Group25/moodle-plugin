@@ -22,6 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- function local_workflow_before_footer(){
-   \core\notification::add('hi', \core\output\notification::NOTIFY_SUCCESS);
- }
+//  function local_workflow_before_footer(){
+//    \core\notification::add('hi', \core\output\notification::NOTIFY_SUCCESS);
+//  }
