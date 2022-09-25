@@ -43,6 +43,10 @@ class createrequest extends moodleform {
         $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
 //        $mform->setDefault('index_no', 'Please enter index no.');        // Default value.
 
+        $mform->addElement('select', 'requ_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
+        $mform->setType('req_type', PARAM_NOTAGS);                   // Set type of element.
+        $mform->addRule('req_type', 'Missing Request Type', 'required', null, 'server');
+
         $mform->addElement('date_time_selector', 'extend_time', 'Extend Time');
 //        $mform->addElement('text', 'extend_time', 'Extend Time'); // Add elements to your form.
         $mform->setType('extend_time', PARAM_NOTAGS);                   // Set type of element.
@@ -54,9 +58,12 @@ class createrequest extends moodleform {
 //        $mform->setDefault('reason', 'Please enter reason');        // Default value.
 
         $data = $this->_customdata['data'];
-        $options = $this->_customdata['options'];
+        // $options = $this->_customdata['options'];
 
-        $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, $options);
+        $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => -1, 'accepted_types' => '*',
+        'areamaxbytes' => 10485760);
+
+        $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, array());
         $mform->addElement('hidden', 'returnurl', $data->returnurl);
         if (isset($data->emaillink)) {
             $emaillink = html_writer::link(new moodle_url('mailto:' . $data->emaillink), $data->emaillink);
@@ -66,8 +73,7 @@ class createrequest extends moodleform {
         $mform->setType('returnurl', PARAM_LOCALURL);
 
 
-//        $options = array('subdirs' => 1, 'maxbytes' => $maxbytes, 'maxfiles' => -1, 'accepted_types' => '*',
-//            'areamaxbytes' => $maxareabytes);
+      
 //        file_prepare_standard_filemanager($mform, 'files', $options, $context, 'user', 'private', 0);
 
         $this->add_action_buttons(true, get_string('savechanges'));
