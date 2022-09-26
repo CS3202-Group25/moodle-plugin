@@ -31,6 +31,6 @@
     }
 }}
 
-{{#pageurl}}
-<input type="button" class="btn btn-primary" id="ceatereq" value="Create Request" onclick="location.href='{{pageurl}}'">
-{{/pageurl}}
+{{#redirectbuttons}}
+<input type="button" class="btn btn-primary" id="{{btnid}}" value="{{btnval}}" onclick="location.href='{{pageurl}}'">
+{{/redirectbuttons}}

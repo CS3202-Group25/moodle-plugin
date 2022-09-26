@@ -19,19 +19,27 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/local/workflow/classes/form/student_index.php');
-
 
 $PAGE->set_url(new moodle_url('/local/workflow/student_index.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('Student Index');
 
-$mform = new studentindex();
-
 echo $OUTPUT->header();
 
 $templatecontent = (object) [
-    'pageurl' => new moodle_url('/local/workflow/create_req.php'),
+    'redirectbuttons' => array_values(array(
+                                1 => array(
+                                    'btnid' => 'createreq', 
+                                    'btnval' => 'Create Request',
+                                    'pageurl' => new moodle_url('/local/workflow/create_req.php'),
+                                ),
+                                2 => array(
+                                    'btnid' => 'viewallreq', 
+                                    'btnval' => 'View All Requests',
+                                    'pageurl' => new moodle_url('/local/workflow/view_all_req.php'),
+                                ),
+                            )),
+    
 ];
 
 echo $OUTPUT->render_from_template('local_workflow/redirect_page', $templatecontent);
