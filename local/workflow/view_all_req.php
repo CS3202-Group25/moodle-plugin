@@ -117,6 +117,6 @@ $templatecontent_table = (object) [
 
 echo $OUTPUT->render_from_template('local_workflow/workflow_heading', $templatecontent);
 
-echo$OUTPUT->render_from_template('local_workflow/table', $templatecontent_table);
+echo$OUTPUT->render_from_template('local_workflow/req_table', $templatecontent_table);
 
 echo $OUTPUT->footer();
