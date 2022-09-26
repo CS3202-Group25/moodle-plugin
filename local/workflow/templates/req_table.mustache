@@ -31,6 +31,28 @@
     }
 }}
 
-{{#redirectbuttons}}
-<input type="button" class="btn btn-primary" id="{{btnid}}" value="{{btnval}}" onclick="location.href='{{pageurl}}'">
-{{/redirectbuttons}}
+<br/>
+<table class="table table-hover">
+    <thead>
+        <tr>
+
+        {{#headers}}
+        <th scope="col">{{.}}</th>
+        {{/headers}}
+
+        </tr>
+    </thead>
+    <tbody>
+
+    {{#requests}}
+        <tr>
+        <td scope="row"><a href='/local/workflow/view_req.php?={{req_id}}')><img src="./icon-workflow.svg" alt="workflow-icon" class="icon">{{req_id}}</a></td>
+        <td>{{req_type}}</td>
+        <td>{{stu_id}}{{receiver}}</td>
+        <td>{{state}}</td>
+        </tr>
+    {{/requests}}   
+
+    </tbody>
+</table>
+
