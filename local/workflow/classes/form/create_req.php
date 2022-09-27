@@ -33,7 +33,6 @@ class createrequest extends moodleform {
         $mform->setType('course', PARAM_NOTAGS);                   // Set type of element.
         $mform->setDefault('course', 'InXX-SX-XX0000');        // Default value.
 
-
         $mform->addElement('static', 'assessment', 'Assessment'); // Add elements to your form.
         $mform->setType('assessment', PARAM_NOTAGS);                   // Set type of element.
         $mform->setDefault('assessment', 'Quiz 01');        // Default value.
@@ -43,44 +42,41 @@ class createrequest extends moodleform {
         $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
 //        $mform->setDefault('index_no', 'Please enter index no.');        // Default value.
 
-        $mform->addElement('select', 'requ_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
+        $mform->addElement('select', 'req_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
         $mform->setType('req_type', PARAM_NOTAGS);                   // Set type of element.
         $mform->addRule('req_type', 'Missing Request Type', 'required', null, 'server');
 
         $mform->addElement('date_time_selector', 'extend_time', 'Extend Time');
-//        $mform->addElement('text', 'extend_time', 'Extend Time'); // Add elements to your form.
+       $mform->addElement('text', 'extend_time', 'Extend Time'); // Add elements to your form.
         $mform->setType('extend_time', PARAM_NOTAGS);                   // Set type of element.
-//        $mform->setDefault('extend_time', 'Please enter extend time.');        // Default value.
+       $mform->setDefault('extend_time', 'Please enter extend time.');        // Default value.
+       $mform->hideIf('extend_time', 'req_type', 'eq', 1);
+
+        // $mform->addElement('duration', 'timelimit', get_string('timelimit', 'quiz'));
+        // $mform->setType('timelimit', PARAM_NOTAGS);                   // Set type of element.
+        // $mform->addRule('timelimit', 'Missing Time Limit', 'required', null, 'server');        
 
         $mform->addElement('textarea', 'reason', "Reason", 'wrap="virtual" rows="5" cols="130"');
         $mform->setType('reason', PARAM_NOTAGS);                   // Set type of element.
         $mform->addRule('reason', 'Missing Reason', 'required', null, 'server');
 //        $mform->setDefault('reason', 'Please enter reason');        // Default value.
 
-        $data = $this->_customdata['data'];
+        // $data = $this->_customdata['data'];
         // $options = $this->_customdata['options'];
 
-        $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => -1, 'accepted_types' => '*',
-        'areamaxbytes' => 10485760);
+        // $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => 1, 'accepted_types' => '*',
+        // 'areamaxbytes' => 10485760);
 
-        $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, array());
-        $mform->addElement('hidden', 'returnurl', $data->returnurl);
-        if (isset($data->emaillink)) {
-            $emaillink = html_writer::link(new moodle_url('mailto:' . $data->emaillink), $data->emaillink);
-            $mform->addElement('static', 'emailaddress', '',
-                get_string('emailtoprivatefiles', 'moodle', $emaillink));
-        }
-        $mform->setType('returnurl', PARAM_LOCALURL);
+        $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => 1, 'accepted_types' => '*');
 
-
-      
-//        file_prepare_standard_filemanager($mform, 'files', $options, $context, 'user', 'private', 0);
+        $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, $options);
+        $mform->setType('file_manager', PARAM_LOCALURL);
 
         $this->add_action_buttons(true, get_string('savechanges'));
 
-        $this->set_data($data);
+        // $this->set_data($data);
 
-        echo $data;
+        // echo $data;
 
     }
     //Custom validation should be added here

@@ -36,6 +36,23 @@ if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/local/workflow/student_index.php', 'You cancelled the create request form');
 } else if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
+    $recordtoinsert = new stdClass();
+
+    $recordtoinsert->index_no = $fromform->index_no;
+    
+    if ($fromform->req_type == 0) {
+        $recordtoinsert->req_type = 'Extend Deadline';
+    } else {
+        $recordtoinsert->req_type = 'Recorrection';
+    }
+
+    $recordtoinsert->extend_time = $fromform->extend_time;
+    $recordtoinsert->reason = $fromform->reason;
+    $recordtoinsert->file = $fromform->files_filemanager;
+
+    // var_dump($recordtoinsert);
+    // die;
+   
 } else {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
