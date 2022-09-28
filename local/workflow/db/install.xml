@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/workflow/db" VERSION="20130487" COMMENT="XMLDB file for local workflow plugin"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+
+    <TABLES>
+        <TABLE NAME="local_workflow" COMMENT="each record a workflow unique for a course">
+            <FIELDS>
+                <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="lecturerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="instructorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="enddate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="workflowid"/>
+                <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+                <KEY NAME="lecturerid" TYPE="foreign" FIELDS="lecturerid" REFTABLE="user" REFFIELDS="id"/>                
+                <KEY NAME="instructorid" TYPE="foreign" FIELDS="instructorid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+
+        <TABLE NAME="local_workflow_request" COMMENT="each record a unique request">
+            <FIELDS>
+                <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
+                <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="reqeusttype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="isbatchrequest" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>                
+                <FIELD NAME="reason" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="filesid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="state" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="askedmoredetails" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="commentlecturer" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="sentdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="receivedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="requestid"/>
+                <KEY NAME="workflowid" TYPE="foreign" FIELDS="workflowid" REFTABLE="local_workflow" REFFIELDS="workflowid"/>
+                <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>                
+                <KEY NAME="receivedby" TYPE="foreign" FIELDS="receivedby" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+        </TABLE>
+
+        <TABLE NAME="local_request_files" COMMENT="each record a file for request">
+            <FIELDS>
+                <FIELD NAME="requestfileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
+                <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>            
+                <FIELD NAME="fileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="requestfileid"/>
+                <KEY NAME="requestid" TYPE="foreign" FIELDS="requestid" REFTABLE="local_workflow_request" REFFIELDS="requestid"/>
+                <KEY NAME="fileid" TYPE="foreign" FIELDS="fileid" REFTABLE="files" REFFIELDS="id"/>              
+            </KEYS>
+        </TABLE>
+
+         <TABLE NAME="local_request_extend" COMMENT="each record a file for request">
+            <FIELDS>
+                <FIELD NAME="requestextendid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
+                <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>            
+                <FIELD NAME="assessmenttype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="assessmentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="requestextendid"/>
+                <KEY NAME="requestid" TYPE="foreign" FIELDS="requestid" REFTABLE="local_workflow_request" REFFIELDS="requestid"/>             
+            </KEYS>
+        </TABLE>
+
+    </TABLES>
+</XMLDB>
