@@ -35,7 +35,7 @@ class establishWorkflow extends moodleform {
         $mform->addElement('text', 'intake', 'Intake'); // Add elements to your form.
         $mform->setType('intake', PARAM_NOTAGS);                   // Set type of element.
 
-        $mform->addElement('text', 'semester', 'Course Code'); // Add elements to your form.
+        $mform->addElement('text', 'semester', 'Semester'); // Add elements to your form.
         $mform->setType('semester', PARAM_NOTAGS);                   // Set type of element.
 
         $instructors = array();

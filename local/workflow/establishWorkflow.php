@@ -28,6 +28,21 @@ $PAGE->set_title("Establish Workflow");
 
 $mform = new establishWorkflow();
 
+//Form processing and displaying is done here
+if ($mform->is_cancelled()) {
+    //Handle form cancel operation, if cancel button is present on form
+    redirect($CFG->wwwroot . '/my', 'You cancelled the form');
+} else if ($fromform = $mform->get_data()) {
+    //In this case you process validated data. $mform->get_data() returns data posted in form.
+    $recordToInsert = new stdClass();
+    $recordToInsert->courseCode =$fromform->courseCode;
+    $recordToInsert->instructor =$fromform->instructo;
+    $recordToInsert->semester =$fromform->semester;
+    $recordToInsert->intake =$fromform->intake;
+
+    $DB->insert_record(workflow, $recordToInsert);
+}
+
 echo $OUTPUT->header();
 
 $templateContent = (object) [
