@@ -33,24 +33,38 @@ class createrequest extends moodleform {
         $mform->setType('course', PARAM_NOTAGS);                   // Set type of element.
         $mform->setDefault('course', 'InXX-SX-XX0000');        // Default value.
 
-        $mform->addElement('static', 'assessment', 'Assessment'); // Add elements to your form.
+        $mform->addElement('select', 'req_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
+        $mform->setType('req_type', PARAM_NOTAGS);                   // Set type of element.
+        // $mform->addRule('req_type', 'Missing Request Type', 'required', null, 'server');
+
+        $mform->addElement('select', 'assessment_type', 'Assessment Type', array('Quiz', 'Assignment')); // Add elements to your form.
+        $mform->setType('assessment_type', PARAM_NOTAGS);                   // Set type of element.
+        $mform->hideIf('assessment_type', 'req_type', 'eq', 1);
+        // $mform->addRule('assessment_type', 'Missing Assessment Type', 'required', null, 'server');
+
+        $mform->addElement('select', 'assessment', 'Assessment', array('Quiz 01', 'Quiz 02', 'Quiz 03')); // Add elements to your form.
         $mform->setType('assessment', PARAM_NOTAGS);                   // Set type of element.
-        $mform->setDefault('assessment', 'Quiz 01');        // Default value.
+        $mform->hideIf('assessment', 'req_type', 'eq', 1);
+
+        // $mform->addElement('advcheckbox', 'isbatchreq', 'Is this a batch request', 'Yes', array('group' => 1), array(0, 1));
+
+        $radioarray=array();
+        $radioarray[] = $mform->createElement('radio', 'isbatchreq', '', get_string('yes'), 1, 'yes');
+        $radioarray[] = $mform->createElement('radio', 'isbatchreq', '', get_string('no'), 0, 'no');
+        $mform->addGroup($radioarray, 'isbatchreq', 'Is this a batch request', array(' '), false);
+      
 
         $mform->addElement('text', 'index_no', 'Index No'); // Add elements to your form.
         $mform->setType('index_no', PARAM_NOTAGS);                   // Set type of element.
-        $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
+        // $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
+        $mform->hideIf('index_no', 'isbatchreq', 'eq', 1);
 //        $mform->setDefault('index_no', 'Please enter index no.');        // Default value.
-
-        $mform->addElement('select', 'req_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
-        $mform->setType('req_type', PARAM_NOTAGS);                   // Set type of element.
-        $mform->addRule('req_type', 'Missing Request Type', 'required', null, 'server');
-
+       
         $mform->addElement('date_time_selector', 'extend_time', 'Extend Time');
-       $mform->addElement('text', 'extend_time', 'Extend Time'); // Add elements to your form.
+        $mform->addElement('text', 'extend_time', 'Extend Time'); // Add elements to your form.
         $mform->setType('extend_time', PARAM_NOTAGS);                   // Set type of element.
-       $mform->setDefault('extend_time', 'Please enter extend time.');        // Default value.
-       $mform->hideIf('extend_time', 'req_type', 'eq', 1);
+        $mform->setDefault('extend_time', 'Please enter extend time.');        // Default value.
+        $mform->hideIf('extend_time', 'req_type', 'eq', 1);
 
         // $mform->addElement('duration', 'timelimit', get_string('timelimit', 'quiz'));
         // $mform->setType('timelimit', PARAM_NOTAGS);                   // Set type of element.

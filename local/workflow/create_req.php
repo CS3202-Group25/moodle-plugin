@@ -41,12 +41,15 @@ if ($mform->is_cancelled()) {
     $recordtoinsert->index_no = $fromform->index_no;
     
     if ($fromform->req_type == 0) {
-        $recordtoinsert->req_type = 'Extend Deadline';
+        $recordtoinsert->requesttype = 'Extend Deadline';
+        $recordtoinsert->extendtime = $fromform->extend_time;
+        $recordtoinsert->assessmenttype = $fromform->assessment_type;
+        $recordtoinsert->assessmentname = $fromform->assessment;
     } else {
-        $recordtoinsert->req_type = 'Recorrection';
+        $recordtoinsert->requestype = 'Recorrection';
     }
 
-    $recordtoinsert->extend_time = $fromform->extend_time;
+
     $recordtoinsert->reason = $fromform->reason;
     $recordtoinsert->file = $fromform->files_filemanager;
 
