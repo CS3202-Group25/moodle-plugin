@@ -28,6 +28,8 @@ class createrequest extends moodleform {
 
         $mform = $this->_form; // Don't forget the underscore!
 
+        $mform->disable_form_change_checker();
+
         $mform->addElement('static', 'course', 'Course'); // Add elements to your form.
 //        $mform->addHelpButton('course', 'course', 'moodle', 'Hi', false);
         $mform->setType('course', PARAM_NOTAGS);                   // Set type of element.
@@ -42,23 +44,31 @@ class createrequest extends moodleform {
         $mform->hideIf('assessment_type', 'req_type', 'eq', 1);
         // $mform->addRule('assessment_type', 'Missing Assessment Type', 'required', null, 'server');
 
-        $mform->addElement('select', 'assessment', 'Assessment', array('Quiz 01', 'Quiz 02', 'Quiz 03')); // Add elements to your form.
-        $mform->setType('assessment', PARAM_NOTAGS);                   // Set type of element.
-        $mform->hideIf('assessment', 'req_type', 'eq', 1);
+        $mform->addElement('select', 'assessment_quiz', 'Assessment', array_values($this->_customdata['assessment']['Quiz'])); // Add elements to your form.
+        $mform->setType('assessment_quiz', PARAM_NOTAGS);                   // Set type of element.
+        $mform->hideIf('assessment_quiz', 'req_type', 'eq', 1);
+        $mform->hideIf('assessment_quiz', 'assessment_type', 'eq', 1);
+
+        $mform->addElement('select', 'assessment_assign', 'Assessment', array_values($this->_customdata['assessment']['Assignment'])); // Add elements to your form.
+        $mform->setType('assessment_assign', PARAM_NOTAGS);                   // Set type of element.
+        $mform->hideIf('assessment_assign', 'req_type', 'eq', 1);
+        $mform->hideIf('assessment_assign', 'assessment_type', 'eq', 0);
 
         // $mform->addElement('advcheckbox', 'isbatchreq', 'Is this a batch request', 'Yes', array('group' => 1), array(0, 1));
 
         $radioarray=array();
-        $radioarray[] = $mform->createElement('radio', 'isbatchreq', '', get_string('yes'), 1, 'yes');
-        $radioarray[] = $mform->createElement('radio', 'isbatchreq', '', get_string('no'), 0, 'no');
+        $radioarray[] = $mform->createElement('radio', 'yesno', '', get_string('yes'), 1, 'yes');
+        $radioarray[] = $mform->createElement('radio', 'yesno', '', get_string('no'), 0, 'no');
         $mform->addGroup($radioarray, 'isbatchreq', 'Is this a batch request', array(' '), false);
+        $mform->hideIf('isbatchreq', 'req_type', 'eq', 1);
+
       
 
         $mform->addElement('text', 'index_no', 'Index No'); // Add elements to your form.
         $mform->setType('index_no', PARAM_NOTAGS);                   // Set type of element.
-        // $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
-        $mform->hideIf('index_no', 'isbatchreq', 'eq', 1);
-//        $mform->setDefault('index_no', 'Please enter index no.');        // Default value.
+        $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
+        // $mform->hideIf('index_no', 'isbatchreq', 'eq', 1);
+    //    $mform->setDefault('index_no', 'Please enter index no.');        // Default value.
        
         $mform->addElement('date_time_selector', 'extend_time', 'Extend Time');
         $mform->addElement('text', 'extend_time', 'Extend Time'); // Add elements to your form.
@@ -81,7 +91,7 @@ class createrequest extends moodleform {
         // $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => 1, 'accepted_types' => '*',
         // 'areamaxbytes' => 10485760);
 
-        $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => 1, 'accepted_types' => '*');
+        $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => -1, 'accepted_types' => '*');
 
         $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, $options);
         $mform->setType('file_manager', PARAM_LOCALURL);

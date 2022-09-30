@@ -26,9 +26,11 @@ $PAGE->set_url(new moodle_url('/local/workflow/create_req.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('Create Request');
 
+// get data from db
+$assessment = array('Quiz'=>array('001'=>'Quiz 01', '002'=>'Quiz 02', '003'=>'Quiz 03'), 'Assignment'=>array('011'=>'Assignment 01', '012'=>'Assignment 02', '013'=>'Assignment 03'));
 // display form
 //Instantiate simplehtml_form
-$mform = new createrequest();
+$mform = new createrequest(null, array('assessment'=>$assessment));
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
@@ -38,20 +40,32 @@ if ($mform->is_cancelled()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     $recordtoinsert = new stdClass();
 
+ 
+
     $recordtoinsert->index_no = $fromform->index_no;
     
     if ($fromform->req_type == 0) {
         $recordtoinsert->requesttype = 'Extend Deadline';
         $recordtoinsert->extendtime = $fromform->extend_time;
-        $recordtoinsert->assessmenttype = $fromform->assessment_type;
-        $recordtoinsert->assessmentname = $fromform->assessment;
+
+        if ($fromform->assessment_type == 0) {
+            $recordtoinsert->assessmenttype = 'Quiz';
+            $recordtoinsert->assessmentid = (array_keys($assessment['Quiz'])[$fromform->assessment_quiz]);
+        } else {
+            $recordtoinsert->assessmenttype = 'Assignment';
+            $recordtoinsert->assessmentid = (array_keys($assessment['Assignment'])[$fromform->assessment_assign]);
+        }
+    
+        $recordtoinsert->isbatchrequest = $fromform->yesno;
+        $recordtoinsert->extendtime = $fromform->extend_time;
+        
     } else {
         $recordtoinsert->requestype = 'Recorrection';
     }
 
-
+    $recordtoinsert->studentid = $fromform->index_no;
     $recordtoinsert->reason = $fromform->reason;
-    $recordtoinsert->file = $fromform->files_filemanager;
+    $recordtoinsert->filesid = $fromform->files_filemanager;
 
     // var_dump($recordtoinsert);
     // die;
