@@ -60,6 +60,7 @@
         </TABLE>
 
          <TABLE NAME="local_request_extend" COMMENT="each record a extend for deadline extend request">
+
             <FIELDS>
                 <FIELD NAME="requestextendid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
                 <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>            
