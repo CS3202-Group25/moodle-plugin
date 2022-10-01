@@ -59,12 +59,15 @@
             </KEYS>
         </TABLE>
 
-         <TABLE NAME="local_request_extend" COMMENT="each record a file for request">
+         <TABLE NAME="local_request_extend" COMMENT="each record extend time for a deadline extend request">
+
             <FIELDS>
                 <FIELD NAME="requestextendid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
                 <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>            
                 <FIELD NAME="assessmenttype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="assessmentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="extendtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="requestextendid"/>
