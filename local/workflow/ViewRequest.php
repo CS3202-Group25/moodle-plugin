@@ -19,14 +19,48 @@
  * @var stdClass $plugin
  */
 
+
+global $DB;
 require_once (__DIR__ . '/../../config.php');
-//require_once ($CFG->dirroot . '/local/workflow/classes/form/viewRequest.php');
 
 $PAGE->set_url(new moodle_url('/local/workflow/viewRequest.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("View a Request");
 
-//$mform = new establishWorkflow();
+//$role = $DB->get_record('role', array('shortname' => 'teacher'));
+//$context = get_context_instance(CONTEXT_COURSE, 4);
+//$teachers = get_role_users($role->id, $context);
+
+$roleId = $DB->get_record('role_assignments',array('userid'=>$USER->id), "roleid");
+
+
+if($roleId->roleid === "4"){
+    $buttons = array(
+        array(
+            'btnId' => 'forward',
+            'btnValue' => 'Forward',
+    ),
+        array(
+            'btnId' => 'cancel',
+            'btnValue' => 'Cancel',
+    ));
+}elseif($roleId->roleid === "3"){
+    $buttons = array(
+        array(
+            'btnId' => 'approve',
+            'btnValue' => 'Approve',
+        ),
+        array(
+            'btnId' => 'disapprove',
+            'btnValue' => 'Disapprove',
+        ));
+}else{
+    $buttons = array(
+        array(
+            'btnId' => 'cancel',
+            'btnValue' => 'Cancel',
+        ));
+}
 
 echo $OUTPUT->header();
 
@@ -35,34 +69,17 @@ $templateContent = (object) [
 ];
 
 $viewRequestContent = (object) [
-    'profilePic' => '/local/images/Fb_Dp.jpg',
-//    'sender' => ,
 
     'description' => 'Please note that Lab 1 in CS2022 - Data Structures & Algorithms will be held today (Thursday, 17th December) at 1 PM through Zoom and Hackerrank . Attendance is compulsory for the Lab sessions. For more details: refer Lab1 section in Moodle',
 
-    'buttons' => array_values(array(
-        1 => array(
-            'btnId' => 'forward',
-            'btnValue' => 'Forward',
-        ),
-        2 => array(
-            'btnId' => 'approve',
-            'btnValue' => 'Approve',
-        ),
-        3 => array(
-            'btnId' => 'disapprove',
-            'btnValue' => 'Disapprove',
-        ),
-        4 => array(
-            'btnId' => 'cancel',
-            'btnValue' => 'Cancel',
-        ),
-    )),
+    'buttons' => $buttons,
+
+//    'test' => array_values($teachers)[0]->firstname
+
 ];
 
 echo $OUTPUT->render_from_template('local_workflow/workflow_heading', $templateContent);
 
 echo $OUTPUT->render_from_template('local_workflow/view_request', $viewRequestContent);
-
 
 echo $OUTPUT->footer();

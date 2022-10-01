@@ -19,12 +19,20 @@
  * @var stdClass $plugin
  */
 
+global $DB, $USER, $OUTPUT, $PAGE, $CFG;
 require_once (__DIR__ . '/../../config.php');
 require_once ($CFG->dirroot . '/local/workflow/classes/form/establishWorkflow.php');
 
 $PAGE->set_url(new moodle_url('/local/workflow/establishWorkflow.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Establish Workflow");
+
+//$role = $DB->get_record('role', array('shortname' => 'teacher'));
+//        $courseId = ($DB->get_record('course',array('shortname'=>($mform->getdata())->courseCode),'id'))->id;
+//        var_dump($courseId);
+//        die;
+//        $context = get_context_instance(CONTEXT_COURSE, $courseId->id);
+//        $instructorObjects = get_role_users($role->id, $context);
 
 $mform = new establishWorkflow();
 
@@ -35,12 +43,16 @@ if ($mform->is_cancelled()) {
 } else if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     $recordToInsert = new stdClass();
-    $recordToInsert->courseCode =$fromform->courseCode;
-    $recordToInsert->instructor =$fromform->instructo;
-    $recordToInsert->semester =$fromform->semester;
-    $recordToInsert->intake =$fromform->intake;
+    $recordToInsert->courseid=($DB->get_record('course',array('shortname'=>$fromform->courseCode),'id'))->id;
+    $recordToInsert->instructorid = 5;
+    $recordToInsert->lecturerid =$USER->id;
+    $recordToInsert->startdate= $fromform->startDate;
+    $recordToInsert->enddate=$fromform->endDate;
 
-    $DB->insert_record(workflow, $recordToInsert);
+    $DB->insert_record(local_workflow, $recordToInsert);
+
+    $courseName = ($DB->get_record('course',array('shortname'=>$fromform->courseCode),'fullname'))->fullname;
+    redirect($CFG->wwwroot . '/local/workflow/establishWorkflow.php', "You have successfully established a workflow for {$courseName}");
 }
 
 echo $OUTPUT->header();

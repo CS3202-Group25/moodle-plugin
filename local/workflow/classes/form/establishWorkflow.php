@@ -19,32 +19,31 @@
  * @var stdClass $plugin
  */
 
+global $PAGE, $CFG;
 require_once("$CFG->libdir/formslib.php");
+require_once($CFG->libdir . '/pagelib.php');
+$PAGE->requires->js( new moodle_url($CFG->wwwroot . '/mod/mymod/script.js') );
 
 class establishWorkflow extends moodleform {
     //Add elements to form
     public function definition() {
-        global $CFG;
+        global $DB;
 
         $mform = $this->_form; // Don't forget the underscore!
 
         $mform->addElement('text', 'courseCode', 'Course Code'); // Add elements to your form.
         $mform->setType('courseCode', PARAM_NOTAGS);                   // Set type of element.
-//        $mform->setDefault('courseCode', 'Please enter course code');        // Default value.
 
-        $mform->addElement('text', 'intake', 'Intake'); // Add elements to your form.
-        $mform->setType('intake', PARAM_NOTAGS);                   // Set type of element.
-
-        $mform->addElement('text', 'semester', 'Semester'); // Add elements to your form.
-        $mform->setType('semester', PARAM_NOTAGS);                   // Set type of element.
+//        $sql = "select id from {course} where shortname = 'CS1032' ";
+//        $test = $DB->get_records_sql($sql);
 
         $instructors = array();
         $instructors['0'] = "Aruna Senanayake";
-        $instructors['1'] = "Balara Sawanmee";
-        $instructors['2'] = "Thevin Senath";
-        $instructors['3'] = "Banula Kumarage";
-
         $mform->addElement('select', 'instructor', 'Instructor', $instructors); // Add elements to your form.
+
+        $mform->addElement('date_selector', 'startDate', get_string('from'));
+
+        $mform->addElement('date_selector', 'endDate', get_string('to'));
 
         $this->add_action_buttons();
 
