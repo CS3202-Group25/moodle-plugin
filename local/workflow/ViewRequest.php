@@ -20,19 +20,31 @@
  */
 
 
-global $DB;
+global $DB, $OUTPUT, $PAGE, $USER;
 require_once (__DIR__ . '/../../config.php');
 
 $PAGE->set_url(new moodle_url('/local/workflow/viewRequest.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("View a Request");
 
+require_login();
+
 //$role = $DB->get_record('role', array('shortname' => 'teacher'));
 //$context = get_context_instance(CONTEXT_COURSE, 4);
 //$teachers = get_role_users($role->id, $context);
 
+$requestId = $_GET["requestid"];
+$request = $DB->get_record('local_workflow_request',array('requestid'=>$requestId));
+$sender = $DB->get_record('user',array('id'=>$request->studentid));
+$sentdate = date('l jS \of F Y h:i:s A', $sender->sentdate);
 $roleId = $DB->get_record('role_assignments',array('userid'=>$USER->id), "roleid");
+$picture = $DB->get_record('files', array('id'=>69));
 
+function updateRequest($btnId){
+    if($btnId === 'cancel'){
+
+    }
+}
 
 if($roleId->roleid === "4"){
     $buttons = array(
@@ -70,8 +82,10 @@ $templateContent = (object) [
 
 $viewRequestContent = (object) [
 
-    'description' => 'Please note that Lab 1 in CS2022 - Data Structures & Algorithms will be held today (Thursday, 17th December) at 1 PM through Zoom and Hackerrank . Attendance is compulsory for the Lab sessions. For more details: refer Lab1 section in Moodle',
-
+    'profilePic' => $picture->contenthash,
+    'date' => $sentdate,
+    'name' => "{$sender->firstname} {$sender->lastname}",
+    'description' => $request->reason,
     'buttons' => $buttons,
 
 //    'test' => array_values($teachers)[0]->firstname

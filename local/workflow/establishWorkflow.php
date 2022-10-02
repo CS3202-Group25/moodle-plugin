@@ -27,13 +27,8 @@ $PAGE->set_url(new moodle_url('/local/workflow/establishWorkflow.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Establish Workflow");
 
-//$role = $DB->get_record('role', array('shortname' => 'teacher'));
-//        $courseId = ($DB->get_record('course',array('shortname'=>($mform->getdata())->courseCode),'id'))->id;
-//        var_dump($courseId);
-//        die;
-//        $context = get_context_instance(CONTEXT_COURSE, $courseId->id);
-//        $instructorObjects = get_role_users($role->id, $context);
-
+require_login();
+// Do or display something.
 $mform = new establishWorkflow();
 
 //Form processing and displaying is done here
@@ -51,6 +46,24 @@ if ($mform->is_cancelled()) {
 
     $DB->insert_record(local_workflow, $recordToInsert);
 
+//    $message = new stdClass();
+//    $message->component = 'local_workflow'; // Your plugin's name
+//    $message->name = 'Establish Workflow'; // Your notification name from message.php
+//    $message->userfrom = core_user::get_noreply_user(); // If the message is 'from' a specific user you can set them here
+//    $message->userto = ($DB->get_record('user',array('firstname'=>'Balara')))->id;
+//    $message->subject = 'message subject 1';
+//    $message->fullmessage = 'message body';
+//    $message->fullmessageformat = FORMAT_MARKDOWN;
+//    $message->fullmessagehtml = '<p>message body</p>';
+//    $message->smallmessage = 'small message';
+//    $message->notification = 0; // Because this is a notification generated from Moodle, not a user-to-user message
+//    $message->contexturl = (new \moodle_url('/course/'))->out(false); // A relevant URL for the notification
+//    $message->contexturlname = 'Course list'; // Link title explaining where users get to for the contexturl
+//    $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
+//    $message->set_additional_content('email', $content);
+//
+//    $messageid = message_send($message);
+
     $courseName = ($DB->get_record('course',array('shortname'=>$fromform->courseCode),'fullname'))->fullname;
     redirect($CFG->wwwroot . '/local/workflow/establishWorkflow.php', "You have successfully established a workflow for {$courseName}");
 }
@@ -66,3 +79,11 @@ echo $OUTPUT->render_from_template('local_workflow/workflow_heading', $templateC
 $mform->display();
 
 echo $OUTPUT->footer();
+
+//$role = $DB->get_record('role', array('shortname' => 'teacher'));
+//        $courseId = ($DB->get_record('course',array('shortname'=>($mform->getdata())->courseCode),'id'))->id;
+//        var_dump($courseId);
+//        die;
+//        $context = get_context_instance(CONTEXT_COURSE, $courseId->id);
+//        $instructorObjects = get_role_users($role->id, $context);
+
