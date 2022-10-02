@@ -28,13 +28,13 @@
                 <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
                 <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="studentid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="reqeusttype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="requesttype" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="isbatchrequest" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>                
                 <FIELD NAME="reason" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="filesid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="filesid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="state" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="askedmoredetails" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="commentlecturer" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="commentlecturer" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="sentdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="receivedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
             </FIELDS>
