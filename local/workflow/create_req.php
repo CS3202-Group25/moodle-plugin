@@ -31,7 +31,7 @@ $PAGE->set_title('Create Request');
 // get data from db
 $workflowid = '2';
 $instructorid = '3';
-$assessment = array('Quiz'=>array('001'=>'Quiz 01', '002'=>'Quiz 02', '003'=>'Quiz 03'), 'Assignment'=>array('011'=>'Assignment 01', '012'=>'Assignment 02', '013'=>'Assignment 03'));
+$assessment = array('Quiz'=>array('1'=>'Quiz 01', '2'=>'Quiz 02', '3'=>'Quiz 03'), 'Assignment'=>array('11'=>'Assignment 01', '12'=>'Assignment 02', '13'=>'Assignment 03'));
 
 // display form
 //Instantiate simplehtml_form
@@ -48,47 +48,54 @@ if ($mform->is_cancelled()) {
     $recordtoinsert->workflowid = $workflowid;
     $recordtoinsert->receivedby = $instructorid;
 
-
-    $recordtoinsert->askedmoredetails = 0;
-    $recordtoinsert->commentlecturer = "";
-
-
     $recordtoinsert->studentid = $fromform->index_no;
     
     if ($fromform->req_type == 0) {
         $recordtoinsert->requesttype = 'Extend Deadline';
-        $recordtoinsert->extendtime = $fromform->extend_time;
+
+        $recordtoinsert_extend = new stdClass();
+
+        $recordtoinsert_extend->extendtime = $fromform->extend_time;
 
         if ($fromform->assessment_type == 0) {
-            $recordtoinsert->assessmenttype = 'Quiz';
-            $recordtoinsert->assessmentid = (array_keys($assessment['Quiz'])[$fromform->assessment_quiz]);
+            $recordtoinsert_extend->assessmenttype = 'Quiz';
+            $recordtoinsert_extend->assessmentid = (array_keys($assessment['Quiz'])[$fromform->assessment_quiz]);
         } else {
-            $recordtoinsert->assessmenttype = 'Assignment';
-            $recordtoinsert->assessmentid = (array_keys($assessment['Assignment'])[$fromform->assessment_assign]);
+            $recordtoinsert_extend->assessmenttype = 'Assignment';
+            $recordtoinsert_extend->assessmentid = (array_keys($assessment['Assignment'])[$fromform->assessment_assign]);
         }
     
         $recordtoinsert->isbatchrequest = $fromform->yesno;
-        $recordtoinsert->extendtime = $fromform->extend_time;
         
     } else {
-        $recordtoinsert->requestype = 'Recorrection';
+        $recordtoinsert->requesttype = 'Recorrection';
+        $recordtoinsert->isbatchrequest = 0;
     }
 
     $recordtoinsert->studentid = $fromform->index_no;
     $recordtoinsert->reason = $fromform->reason;
-    $recordtoinsert->filesid = $fromform->files_filemanager;
 
-    $recordtoinsert->time = new DateTime("now", core_date::get_user_timezone_object());
-    // $recordtoinsert->time->add(new DateInterval("P1D"));
+    $sql = "SELECT id FROM {files} WHERE itemid = :itemid";
+    $exist = $DB->record_exists_sql($sql, ['itemid' => $fromform->files_filemanager]);  
 
-    $recordtoinsert->sentdate = $recordtoinsert->time->getTimestamp();
 
-    // $recordtoinsert->sentdate = userdate(time());
+    if($exist == 1) {
+        $recordtoinsert->filesid = $fromform->files_filemanager;
+    } else {
+        $recordtoinsert->filesid = NULL;
+    }
+    $time = new DateTime("now", core_date::get_user_timezone_object());
+    $recordtoinsert->sentdate = $time->getTimestamp();
 
-    // var_dump($recordtoinsert);
-    // die;
-   
-    $DB->insert_record('local_workflow_request', $recordtoinsert);
+    $recordtoinsert->askedmoredetails = 0;
+    $recordtoinsert->state = 'Pending';
+    $recordtoinsert->commentlecturer = NULL;
+
+    $recordtoinsert_extend->requestid = $DB->insert_record('local_workflow_request', $recordtoinsert);
+
+    if ($fromform->req_type == 0) {
+        $DB->insert_record('local_request_extend', $recordtoinsert_extend);
+    }
 
 } else {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
