@@ -22,12 +22,17 @@ require_once(__DIR__ . '/../../config.php');
 //include create_req.php
 require_once($CFG->dirroot . '/local/workflow/classes/form/create_req.php');
 
+global $DB;
+
 $PAGE->set_url(new moodle_url('/local/workflow/create_req.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('Create Request');
 
 // get data from db
+$workflowid = '2';
+$instructorid = '3';
 $assessment = array('Quiz'=>array('001'=>'Quiz 01', '002'=>'Quiz 02', '003'=>'Quiz 03'), 'Assignment'=>array('011'=>'Assignment 01', '012'=>'Assignment 02', '013'=>'Assignment 03'));
+
 // display form
 //Instantiate simplehtml_form
 $mform = new createrequest(null, array('assessment'=>$assessment));
@@ -40,9 +45,15 @@ if ($mform->is_cancelled()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
     $recordtoinsert = new stdClass();
 
- 
+    $recordtoinsert->workflowid = $workflowid;
+    $recordtoinsert->receivedby = $instructorid;
 
-    $recordtoinsert->index_no = $fromform->index_no;
+
+    $recordtoinsert->askedmoredetails = 0;
+    $recordtoinsert->commentlecturer = "";
+
+
+    $recordtoinsert->studentid = $fromform->index_no;
     
     if ($fromform->req_type == 0) {
         $recordtoinsert->requesttype = 'Extend Deadline';
@@ -67,9 +78,18 @@ if ($mform->is_cancelled()) {
     $recordtoinsert->reason = $fromform->reason;
     $recordtoinsert->filesid = $fromform->files_filemanager;
 
+    $recordtoinsert->time = new DateTime("now", core_date::get_user_timezone_object());
+    // $recordtoinsert->time->add(new DateInterval("P1D"));
+
+    $recordtoinsert->sentdate = $recordtoinsert->time->getTimestamp();
+
+    // $recordtoinsert->sentdate = userdate(time());
+
     // var_dump($recordtoinsert);
     // die;
    
+    $DB->insert_record('local_workflow_request', $recordtoinsert);
+
 } else {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
