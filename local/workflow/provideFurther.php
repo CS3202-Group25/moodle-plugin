@@ -27,6 +27,8 @@ $PAGE->set_url(new moodle_url('/local/workflow/provideFurther.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Send More Details");
 
+require_login();
+
 $form1=new provideFurther();
 
 echo $OUTPUT->header();

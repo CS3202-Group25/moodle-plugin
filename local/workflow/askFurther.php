@@ -23,18 +23,29 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot."/local/workflow/classes/form/askFurther.php");
 
+require_login();
+
+global $DB;
+
 $PAGE->set_url(new moodle_url('/local/workflow/askFurther.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Ask for Further Details");
 
 $form1=new askFurther();
 
-echo $OUTPUT->header();
-
 $templatecontext=(object)[
     'description'=>"Ask a student for further details about the selected request.",
 ];
 echo $OUTPUT->render_from_template("local_workflow/askFurther",$templatecontext);
+
+echo $OUTPUT->header();
+
+if($form1->is_cancelled()){
+    redirect($CFG->wwwroot.'/my',"You cancelled asking for details!");
+}else{
+    $DB->execute("UPDATE mdl_local_workflow_request SET commentlecturer=".$USER->id." WHERE requestid=1");
+}
+
 $form1->display();
 
 echo $OUTPUT->footer();

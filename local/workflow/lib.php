@@ -23,5 +23,5 @@
  */
 
  function local_workflow_before_footer(){
-   \core\notification::add('hi', \core\output\notification::NOTIFY_SUCCESS);
+   //\core\notification::add('hi', \core\output\notification::NOTIFY_SUCCESS);
  }

@@ -33,10 +33,9 @@ class provideFurther extends moodleform{
         $mform->addElement('textarea','details','More Details',);
         $mform->setType('details',PARAM_NOTAGS);
 
-        $mform->addElement('filepicker','files','Files');
+        $mform->addElement('filepicker','files','Select Files');
 
-        $mform->addElement('submit','sendDetails','Send Details');
-        $mform->addElement('cancel','cancel','Cancel');
+        $this->add_action_buttons(true,"Send Details");
     }
 
     function validation($data, $files) {

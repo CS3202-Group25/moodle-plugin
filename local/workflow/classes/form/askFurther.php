@@ -33,8 +33,7 @@ class askFurther extends moodleform{
         $mform->addElement('textarea','message','Enter what is required');
         $mform->setType('message',PARAM_NOTAGS);
 
-        $mform->addElement('submit','sendDetails','Send Details');
-        $mform->addElement('cancel','cancel','Cancel');
+        $this->add_action_buttons(true,"Send Inquiry");
     }
 
     function validation($data, $files) {

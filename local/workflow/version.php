@@ -22,5 +22,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_workflow';
-$plugin->version = 2022092300;
+$plugin->version = 2022092305;
 $plugin->requires = 2020061517; // Moodle version
