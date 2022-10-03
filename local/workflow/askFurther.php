@@ -1,4 +1,3 @@
-@@ -0,0 +1,58 @@
 <?php
 
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,13 +23,13 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot."/local/workflow/classes/form/askFurther.php");
 
-require_login();
-
 global $DB;
 
 $PAGE->set_url(new moodle_url('/local/workflow/askFurther.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Ask for Further Details");
+
+require_login();
 
 $user_role=($DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid=".$USER->id))->roleid;
 
@@ -38,19 +37,23 @@ if ($user_role != '4') {
     redirect($CFG->wwwroot.'/my',"You are not allowed to do that!");
 }
 
+$requestId=$_GET["requestId"];
+
 $form1=new askFurther();
 
-$templatecontext=(object)[
-    'description'=>"Ask a student for further details about the selected request.",
-];
-echo $OUTPUT->render_from_template("local_workflow/askFurther",$templatecontext);
-
 echo $OUTPUT->header();
+
+$templatecontext=(object)[
+    'description'=>"Ask a student for further details about the selected request."
+];
+
+echo $OUTPUT->render_from_template("local_workflow/askFurther",$templatecontext);
 
 if($form1->is_cancelled()){
     redirect($CFG->wwwroot.'/my',"You cancelled asking for details!");
 }else{
-    $DB->execute("UPDATE mdl_local_workflow_request SET commentlecturer=".$USER->id." WHERE requestid=1");
+    $DB->execute("UPDATE mdl_local_workflow_request SET commentlecturer=".$USER->id.", state='DataWait', askedmoredetails=1 WHERE requestid=".intval($_GET["requestid"]));
+    redirect($CFG->wwwroot.'/local/workflow/view_all_req.php',"Operation is successful!");
 }
 
 $form1->display();

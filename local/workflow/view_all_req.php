@@ -22,9 +22,11 @@ require_once(__DIR__ . '/../../config.php');
 
 $PAGE->set_url(new moodle_url('/local/workflow/view_all_req.php'));
 $PAGE->set_context(\context_system::instance());
-$PAGE->set_title('View All Request');
+$PAGE->set_title('View All Requests');
 
-$requests_all = array
+require_login();
+
+/*$requests_all = array
     (1 => array(
         'req_id'=>'REQ1',
         'course_id'=>'In19-CS3220',        
@@ -69,7 +71,7 @@ $requests = array
         'state'=>'Pending',
         'receiver'=>'Instructor'
     )
-);
+);*/
 
 // $requests = array
 //     (1 => array(
@@ -96,18 +98,21 @@ $requests = array
 $stu_header = array(1=>'Request ID', 2=>'Request Type', 3=>'Received By', 4=>'Status');
 $ins_lec_header = array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
 
-$user_role = 'Student';
+//$user_role = 'Student';
+$user_role=($DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid=".$USER->id))->roleid;
 
-if ($user_role == 'Student') {
+if ($user_role == '5') {
+    $requests=$DB->get_records_sql("SELECT * FROM mdl_local_workflow_request WHERE studentid=".$USER->id);
     $header = $stu_header;
 }else {
+    $requests=$DB->get_records_sql("SELECT * FROM mdl_local_workflow_request");
     $header = $ins_lec_header;
 }
 
 echo $OUTPUT->header();
 
 $templatecontent = (object) [
-    'title' => 'View All Requests'
+    'title' => 'View All Requests',
 ];
 
 $templatecontent_table = (object) [

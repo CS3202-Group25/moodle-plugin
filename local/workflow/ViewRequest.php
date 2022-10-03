@@ -40,6 +40,7 @@ $sender = $DB->get_record('user',array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
 $roleId = $DB->get_record('role_assignments',array('userid'=>$USER->id), "roleid");
 //$picture = $DB->get_record('files', array('id'=>69));
+$inquired=($DB->get_record_sql("SELECT * FROM mdl_local_workflow_request WHERE requestid=".$requestId))->askedmoredetails;
 
 if($roleId->roleid === "4"){
     $buttons = array(
@@ -70,6 +71,23 @@ if($roleId->roleid === "4"){
 }
 
 echo $OUTPUT->header();
+$special="";
+
+if($roleId->roleid === "4"){
+    $special="askFurther.php?requestId=$requestId";
+    $buttons2 = array(
+        array(
+            'btnId2' => 'inquire',
+            'btnValue2' => 'Ask More Details'
+    ));
+}elseif($roleId->roleid === "5" && $inquired != "0"){
+    $special="provideFurther.php?requestId=$requestId";
+    $buttons2 = array(
+        array(
+            'btnId2' => 'provide',
+            'btnValue2' => 'Send More Details'
+        ));
+}
 
 $templateContent = (object) [
     'title' => 'View a Request',
@@ -82,7 +100,9 @@ $viewRequestContent = (object) [
     'name' => "{$sender->firstname} {$sender->lastname}",
     'description' => $request->reason,
     'buttons' => $buttons,
-    'requestId' => $requestId
+    'buttons2' => $buttons2,
+    'requestId' => $requestId,
+    'special' => $special
 
 ];
 

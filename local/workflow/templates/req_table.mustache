@@ -46,9 +46,9 @@
 
     {{#requests}}
         <tr>
-        <td scope="row"><a href='/local/workflow/view_req.php?={{req_id}}')><img src="./icon-workflow.svg" alt="workflow-icon" class="icon">{{req_id}}</a></td>
-        <td>{{req_type}}</td>
-        <td>{{stu_id}}{{receiver}}</td>
+        <td scope="row"><a href='/local/workflow/viewRequest.php?requestid={{requestid}}'><img src="./icon-workflow.svg" alt="workflow-icon" class="icon">{{requestid}}</a></td>
+        <td>{{reqeusttype}}</td>
+        <td>{{studentid}}{{receiver}}</td>
         <td>{{state}}</td>
         </tr>
     {{/requests}}   

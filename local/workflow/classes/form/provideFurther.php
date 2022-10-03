@@ -1,4 +1,3 @@
-@@ -0,0 +1,45 @@
 <?php
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

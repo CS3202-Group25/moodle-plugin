@@ -1,4 +1,3 @@
-@@ -0,0 +1,43 @@
 <?php
 
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,11 +23,21 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot."/local/workflow/classes/form/provideFurther.php");
 
+global $DB;
+
 $PAGE->set_url(new moodle_url('/local/workflow/provideFurther.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Send More Details");
 
 require_login();
+
+$user_role=($DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid=".$USER->id))->roleid;
+
+if ($user_role != '5') {
+    redirect($CFG->wwwroot.'/my',"You are not allowed to do that!");
+}
+
+$requestId=$_GET["requestId"];
 
 $form1=new provideFurther();
 
@@ -37,7 +46,15 @@ echo $OUTPUT->header();
 $templatecontext=(object)[
     'description'=>"Ask a student for further details about the selected request.",
 ];
-echo $OUTPUT->render_from_template("local_workflow/askFurther",$templatecontext);
+
+echo $OUTPUT->render_from_template("local_workflow/provideFurther",$templatecontext);
+
+if($form1->is_cancelled()){
+    redirect($CFG->wwwroot.'/my',"You cancelled sending details!");
+}else{
+    $DB->execute("UPDATE mdl_local_workflow_request SET commentlecturer=".$USER->id." WHERE requestid=".$requestId);
+}
+
 $form1->display();
 
 echo $OUTPUT->footer();
