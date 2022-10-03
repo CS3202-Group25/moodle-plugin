@@ -12,7 +12,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template local_workflow/workflow_heading
+    @template local_workflow/view_request
     Admin heading setting template.
     Context variables required for this template:
     * title - Title text
@@ -24,6 +24,25 @@
         "descriptionformatted": "Stilton, Cheddar, Edam"
     }
 }}
-{{#title}}
-    <h3 class="main">{{{title}}}</h3>
-{{/title}}
+<style>
+    img{
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+</style>
+<div class="row">
+    <div>
+        <img class="m-4" src="data:image/png;base64,{{profilePic}}">
+    </div>
+    <div>
+        <p class="mt-3"><strong>{{name}}</strong> </p>
+        <p class="">{{date}}</p>
+    </div>
+</div>
+<p class="lh-base">{{description}}</p>
+<!--<p class="lh-base">{{profilePic}}</p>-->
+{{#buttons}}
+<!--    <input type="button" class="btn btn-primary" id="{{btnId}}" value="{{btnValue}} ">-->
+    <a href="/local/workflow/update.php?requestId={{requestId}}&value={{btnId}}", class="btn btn-primary">{{btnValue}}</a>
+{{/buttons}}

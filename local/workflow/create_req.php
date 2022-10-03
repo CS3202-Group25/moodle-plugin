@@ -22,7 +22,7 @@ require_once(__DIR__ . '/../../config.php');
 //include create_req.php
 require_once($CFG->dirroot . '/local/workflow/classes/form/create_req.php');
 
-global $DB;
+global $DB, $USER;
 
 $PAGE->set_url(new moodle_url('/local/workflow/create_req.php'));
 $PAGE->set_context(\context_system::instance());
@@ -35,7 +35,7 @@ $assessment = array('Quiz'=>array('1'=>'Quiz 01', '2'=>'Quiz 02', '3'=>'Quiz 03'
 
 // display form
 //Instantiate simplehtml_form
-$mform = new createrequest(null, array('assessment'=>$assessment));
+$mform = new create_req(null, array('assessment'=>$assessment));
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
@@ -48,7 +48,7 @@ if ($mform->is_cancelled()) {
     $recordtoinsert->workflowid = $workflowid;
     $recordtoinsert->receivedby = $instructorid;
 
-    $recordtoinsert->studentid = $fromform->index_no;
+    $recordtoinsert->studentid = $USER->id;
     
     if ($fromform->req_type == 0) {
         $recordtoinsert->requesttype = 'Extend Deadline';
@@ -72,7 +72,7 @@ if ($mform->is_cancelled()) {
         $recordtoinsert->isbatchrequest = 0;
     }
 
-    $recordtoinsert->studentid = $fromform->index_no;
+//    $recordtoinsert->studentid = $fromform->index_no;
     $recordtoinsert->reason = $fromform->reason;
 
     $sql = "SELECT id FROM {files} WHERE itemid = :itemid";
