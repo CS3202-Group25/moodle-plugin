@@ -43,5 +43,6 @@
 <p class="lh-base">{{description}}</p>
 <!--<p class="lh-base">{{profilePic}}</p>-->
 {{#buttons}}
-    <input type="button" class="btn btn-primary" id="{{btnId}}" value="{{btnValue}}">
+<!--    <input type="button" class="btn btn-primary" id="{{btnId}}" value="{{btnValue}} ">-->
+    <a href="/local/workflow/update.php?requestId={{requestId}}&value={{btnId}}", class="btn btn-primary">{{btnValue}}</a>
 {{/buttons}}
