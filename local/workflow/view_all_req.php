@@ -18,87 +18,26 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+global $PAGE, $OUTPUT, $CFG;
+
 require_once(__DIR__ . '/../../config.php');
+require_once ($CFG->dirroot . '/local/workflow/classes/requestController.php');
 
 $PAGE->set_url(new moodle_url('/local/workflow/view_all_req.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('View All Request');
 
-$requests_all = array
-    (1 => array(
-        'req_id'=>'REQ1',
-        'course_id'=>'In19-CS3220',        
-        'stu_id'=>'190XXXX',
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 2 => array(
-        'req_id'=>'REQ2',
-        'course_id'=>'In19-CS3220',
-        'stu_id'=>'190XXXX',
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 3 => array(
-        'req_id'=>'REQ3',
-        'course_id'=>'In19-CS3220',
-        'stu_id'=>'190XXXX',
-        'req_type'=>'Recorrection',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    )
-);
+require_login();
 
-$requests = array
-    (1 => array(
-        'req_id'=>'REQ1',
-        'course_id'=>'In19-CS3220',  
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 2 => array(
-        'req_id'=>'REQ2',
-        'course_id'=>'In19-CS3220',
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 3 => array(
-        'req_id'=>'REQ3',
-        'course_id'=>'In19-CS3220',
-        'req_type'=>'Recorrection',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    )
-);
-
-// $requests = array
-//     (1 => array(
-//         'req_id'=>'REQ1',
-//         'course_id'=>'In19-CS3220',  
-//         'stu_id'=>'190XXXX',
-//         'req_type'=>'Extend Deadline',
-//         'state'=>'Pending',
-//     ), 2 => array(
-//         'req_id'=>'REQ2',
-//         'course_id'=>'In19-CS3220',
-//         'stu_id'=>'190XXXX',
-//         'req_type'=>'Extend Deadline',
-//         'state'=>'Pending',
-//     ), 3 => array(
-//         'req_id'=>'REQ3',
-//         'course_id'=>'In19-CS3220',
-//         'stu_id'=>'190XXXX',
-//         'req_type'=>'Recorrection',
-//         'state'=>'Pending',
-//     )
-// );
+$requestController = new requestController();
+$requests = array_values($requestController->getAllRequests());
 
 $stu_header = array(1=>'Request ID', 2=>'Request Type', 3=>'Received By', 4=>'Status');
 $ins_lec_header = array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
 
 $user_role = 'Student';
 
-if ($user_role == 'Student') {
+if ($user_role == 'Student'){
     $header = $stu_header;
 }else {
     $header = $ins_lec_header;
@@ -106,11 +45,11 @@ if ($user_role == 'Student') {
 
 echo $OUTPUT->header();
 
-$templatecontent = (object) [
+$templatecontent = (object)[
     'title' => 'View All Requests'
 ];
 
-$templatecontent_table = (object) [
+$templatecontent_table = (object)[
     'requests' => array_values($requests),
     'headers' => array_values($header),
 ];
