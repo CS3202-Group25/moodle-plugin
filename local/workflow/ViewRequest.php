@@ -36,15 +36,10 @@ require_login();
 $requestId = $_GET["requestid"];
 $request = $DB->get_record('local_workflow_request',array('requestid'=>$requestId));
 $sender = $DB->get_record('user',array('id'=>$request->studentid));
-$sentdate = date('l jS \of F Y h:i:s A', $sender->sentdate);
+//$sentdate = date('l jS \of F Y h:i:s A', $sender->sentdate);
+$sentdate = userdate($request->sentdate);
 $roleId = $DB->get_record('role_assignments',array('userid'=>$USER->id), "roleid");
-$picture = $DB->get_record('files', array('id'=>69));
-
-function updateRequest($btnId){
-    if($btnId === 'cancel'){
-
-    }
-}
+//$picture = $DB->get_record('files', array('id'=>69));
 
 if($roleId->roleid === "4"){
     $buttons = array(
@@ -82,13 +77,12 @@ $templateContent = (object) [
 
 $viewRequestContent = (object) [
 
-    'profilePic' => $picture->contenthash,
+//    'profilePic' => $picture->contenthash,
     'date' => $sentdate,
     'name' => "{$sender->firstname} {$sender->lastname}",
     'description' => $request->reason,
     'buttons' => $buttons,
-
-//    'test' => array_values($teachers)[0]->firstname
+    'requestId' => $requestId
 
 ];
 
