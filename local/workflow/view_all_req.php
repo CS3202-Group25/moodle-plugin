@@ -20,88 +20,46 @@
 
 require_once(__DIR__ . '/../../config.php');
 
+global $DB, $USER;
+
 $PAGE->set_url(new moodle_url('/local/workflow/view_all_req.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('View All Request');
 
-$requests_all = array
-    (1 => array(
-        'req_id'=>'REQ1',
-        'course_id'=>'In19-CS3220',        
-        'stu_id'=>'190XXXX',
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 2 => array(
-        'req_id'=>'REQ2',
-        'course_id'=>'In19-CS3220',
-        'stu_id'=>'190XXXX',
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 3 => array(
-        'req_id'=>'REQ3',
-        'course_id'=>'In19-CS3220',
-        'stu_id'=>'190XXXX',
-        'req_type'=>'Recorrection',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    )
-);
+require_login();
 
-$requests = array
-    (1 => array(
-        'req_id'=>'REQ1',
-        'course_id'=>'In19-CS3220',  
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 2 => array(
-        'req_id'=>'REQ2',
-        'course_id'=>'In19-CS3220',
-        'req_type'=>'Extend Deadline',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    ), 3 => array(
-        'req_id'=>'REQ3',
-        'course_id'=>'In19-CS3220',
-        'req_type'=>'Recorrection',
-        'state'=>'Pending',
-        'receiver'=>'Instructor'
-    )
-);
+// $courseid = '2';
+$workflowid = '2';
 
-// $requests = array
-//     (1 => array(
-//         'req_id'=>'REQ1',
-//         'course_id'=>'In19-CS3220',  
-//         'stu_id'=>'190XXXX',
-//         'req_type'=>'Extend Deadline',
-//         'state'=>'Pending',
-//     ), 2 => array(
-//         'req_id'=>'REQ2',
-//         'course_id'=>'In19-CS3220',
-//         'stu_id'=>'190XXXX',
-//         'req_type'=>'Extend Deadline',
-//         'state'=>'Pending',
-//     ), 3 => array(
-//         'req_id'=>'REQ3',
-//         'course_id'=>'In19-CS3220',
-//         'stu_id'=>'190XXXX',
-//         'req_type'=>'Recorrection',
-//         'state'=>'Pending',
-//     )
-// );
+$sql = 'SELECT shortname FROM {role} r JOIN {role_assignments} ra ON r.id = ra.roleid WHERE ra.userid = :userid';
+$role = $DB->get_record_sql($sql, ['userid' => $USER->id]);
 
-$stu_header = array(1=>'Request ID', 2=>'Request Type', 3=>'Received By', 4=>'Status');
-$ins_lec_header = array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
 
-$user_role = 'Student';
+if ($role->shortname == 'student') {
+    $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Received By', 4=>'Status');
 
-if ($user_role == 'Student') {
-    $header = $stu_header;
-}else {
-    $header = $ins_lec_header;
+    $sql = "SELECT requestid, requesttype, receivedby, state FROM {local_workflow_request} WHERE studentid = :studentid AND workflowid = :workflowid";
+    $requests = $DB->get_records_sql($sql, ['studentid' => $USER->id, 'workflowid' => $workflowid]);
+
+    $receivers = array();
+    foreach ($requests as $key => $value) {
+        $receiverid = $DB->get_record_sql("SELECT roleid FROM {role_assignments} ra JOIN {local_workflow_request} lwr ON ra.userid = lwr.receivedby AND lwr.receivedby = :receiver", ['receiver' => $value->receivedby]);
+        $receiver = $DB->get_record_sql("SELECT shortname FROM {role} WHERE id = :roleid", ['roleid' => $receiverid->roleid]);
+        
+        $requests[$key]->receivedby = ucfirst($receiver->shortname);
+    }
+
+}else if ($role->shortname == 'teacher') {
+    $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
+
+    $sql = "SELECT requestid, requesttype, studentid, state FROM {local_workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'pending'";
+    $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflowid]);
+
+} else if ($role->shortname == 'editingteacher') {
+    $header =array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
+
+    $sql = "SELECT requestid, requesttype, studentid, state FROM {local_workflow_request} WHERE receivedby = :lecturerid AND workflowid = :workflowid AND state <> 'pending'";
+    $requests = $DB->get_records_sql($sql, ['lecturerid' => $USER->id, 'workflowid' => $workflowid]);
 }
 
 echo $OUTPUT->header();
