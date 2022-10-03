@@ -9,7 +9,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./local:/var/www/html/local/
+      - ./local/workflow:/var/www/html/mod/workflow/
   db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password

@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -21,7 +21,7 @@
 //moodleform is defined in formslib.php
 require_once("$CFG->libdir/formslib.php");
 
-class create_req extends moodleform {
+class createrequest extends moodleform {
     //Add elements to form
     public function definition() {
         global $CFG;

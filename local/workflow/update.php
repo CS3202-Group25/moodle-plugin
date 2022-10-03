@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,23 +29,23 @@ $value = $_GET["value"];
 
 function changeStatus($newValue, $requestId, $field){
     global $DB;
-    $needToUpdate = array_values($DB->get_record('local_workflow_request', array('requestid'=>$requestId), "requestid"));
-    $DB->set_field_select('local_workflow_request', $field, $newValue, "requestid $needToUpdate");
+    $needToUpdate = array_values($DB->get_record('workflow_request', array('requestid'=>$requestId), "requestid"));
+    $DB->set_field_select('workflow_request', $field, $newValue, "requestid $needToUpdate");
 }
 
 if($value === 'cancel') {
-    $deleteRequest = $DB->delete_records('local_workflow_request', ['requestid' => $requestId]);
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have successfully deleted the request");
+    $deleteRequest = $DB->delete_records('workflow_request', ['requestid' => $requestId]);
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have successfully deleted the request");
 }elseif ($value === 'approve'){
     changeStatus('Approved', $requestId, 'state');
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have approved the request");
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'disapprove'){
     changeStatus('Disapproved', $requestId, 'state');
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have approved the request");
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'forward'){
     changeStatus('Forwarded To Lecturer', $requestId, 'state');
 //    changeStatus('Lecturer', $requestId, 'receivedby');
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have forwarded the request to lecturer");
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have forwarded the request to lecturer");
 }
 
 

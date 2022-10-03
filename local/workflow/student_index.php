@@ -13,14 +13,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(__DIR__ . '/../../config.php');
 
-$PAGE->set_url(new moodle_url('/local/workflow/student_index.php'));
+$PAGE->set_url(new moodle_url('/mod/workflow/student_index.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('Student Index');
 
@@ -42,6 +42,6 @@ $templatecontent = (object) [
     
 ];
 
-echo $OUTPUT->render_from_template('local_workflow/redirect_page', $templatecontent);
+echo $OUTPUT->render_from_template('mod_workflow/redirect_page', $templatecontent);
 
 echo $OUTPUT->footer();

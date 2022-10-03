@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var stdClass $plugin
@@ -23,7 +23,7 @@
 global $DB, $OUTPUT, $PAGE, $USER;
 require_once (__DIR__ . '/../../config.php');
 
-$PAGE->set_url(new moodle_url('/local/workflow/viewRequest.php'));
+$PAGE->set_url(new moodle_url('/mod/workflow/viewrequest.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("View a Request");
 
@@ -34,7 +34,7 @@ require_login();
 //$teachers = get_role_users($role->id, $context);
 
 $requestId = $_GET["requestid"];
-$request = $DB->get_record('local_workflow_request',array('requestid'=>$requestId));
+$request = $DB->get_record('workflow_request',array('requestid'=>$requestId));
 $sender = $DB->get_record('user',array('id'=>$request->studentid));
 //$sentdate = date('l jS \of F Y h:i:s A', $sender->sentdate);
 $sentdate = userdate($request->sentdate);
@@ -86,8 +86,8 @@ $viewRequestContent = (object) [
 
 ];
 
-echo $OUTPUT->render_from_template('local_workflow/workflow_heading', $templateContent);
+echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
 
-echo $OUTPUT->render_from_template('local_workflow/view_request', $viewRequestContent);
+echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 
 echo $OUTPUT->footer();
