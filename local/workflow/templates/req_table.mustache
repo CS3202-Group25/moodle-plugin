@@ -39,11 +39,11 @@
     <tbody>
 
     {{#requests}}
-        <tr onclick="document.location = '/local/workflow/ViewRequest.php?requestid={{requestid}}'">
-            <td scope="row"><img src="./icon-workflow.svg" alt="workflow-icon" class="icon">{{requestid}}</td>
-            <td>{{requesttype}}</td>
-            <td>{{stu_id}}{{receiver}}</td>
-            <td>{{state}}</td>
+        <tr>
+        <td scope="row"><a href='/local/workflow/view_req.php?={{requestid}}'><img src="./icon-workflow.svg" alt="workflow-icon" class="icon">{{requestid}}</a></td>
+        <td>{{requesttype}}</td>
+        <td>{{studentid}}{{receivedby}}</td>
+        <td>{{state}}</td>
         </tr>
     {{/requests}}
 
