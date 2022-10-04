@@ -87,7 +87,6 @@ if ($mform->is_cancelled()) {
     $receivedby = 0;
 
     $requestid = $requestController->createRequest($workflowid, $studentid, $requesttype, $isbatchrequest, $reason, $filesid, $askedmoredetails, $commentlecturer, $sentdate, $receivedby);
-    echo $requestid;
 
     if ($fromform->req_type == 0) {
         $requestController->createRequestExtend($requestid, $assessmenttype, $assessmentid, $extendtime);
