@@ -48,7 +48,4 @@ if($value === 'cancel') {
     changeStatus('Forwarded To Lecturer', $requestId, 'state');
 //    changeStatus('Lecturer', $requestId, 'receivedby');
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have forwarded the request to lecturer");
-
-
-
-
+}
