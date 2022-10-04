@@ -21,7 +21,7 @@
 global $PAGE, $OUTPUT, $CFG;
 
 require_once(__DIR__ . '/../../config.php');
-require_once ($CFG->dirroot . '/local/workflow/classes/requestController.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 global $DB, $USER;
 
@@ -31,8 +31,8 @@ $PAGE->set_title('View All Requests');
 
 require_login();
 
-$requestController = new requestController();
-$requests = array_values($requestController->getAllRequests());
+// $requestController = new requestController();
+// $requests = array_values($requestController->getAllRequests());
 
 // $courseid = '2';
 $workflowid = '2';
