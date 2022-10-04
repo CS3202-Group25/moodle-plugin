@@ -21,7 +21,7 @@
 //moodleform is defined in formslib.php
 require_once("$CFG->libdir/formslib.php");
 
-class createrequest extends moodleform {
+class create_req extends moodleform {
     //Add elements to form
     public function definition() {
         global $CFG;
@@ -64,9 +64,9 @@ class createrequest extends moodleform {
 
       
 
-        $mform->addElement('text', 'index_no', 'Index No'); // Add elements to your form.
-        $mform->setType('index_no', PARAM_NOTAGS);                   // Set type of element.
-        $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
+//        $mform->addElement('text', 'index_no', 'Index No'); // Add elements to your form.
+//        $mform->setType('index_no', PARAM_NOTAGS);                   // Set type of element.
+//        $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
         // $mform->hideIf('index_no', 'isbatchreq', 'eq', 1);
     //    $mform->setDefault('index_no', 'Please enter index no.');        // Default value.
        
