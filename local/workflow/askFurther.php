@@ -25,9 +25,11 @@ require_once($CFG->dirroot."/local/workflow/classes/form/askFurther.php");
 
 global $DB;
 
+$requestId=$_GET["requestId"];
+
 $PAGE->set_url(new moodle_url('/local/workflow/askFurther.php'));
 $PAGE->set_context(\context_system::instance());
-$PAGE->set_title("Ask for Further Details");
+$PAGE->set_title("Ask for Further Details - request ".$requestId);
 
 require_login();
 
@@ -36,8 +38,6 @@ $user_role=($DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid
 if ($user_role != '4') {
     redirect($CFG->wwwroot.'/my',"You are not allowed to do that!");
 }
-
-$requestId=$_GET["requestId"];
 
 $form1=new askFurther();
 

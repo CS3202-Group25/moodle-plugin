@@ -27,9 +27,6 @@ class askFurther extends moodleform{
 
         $mform=$this->_form;
 
-        $mform->addElement('text','reqID','Request ID');
-        $mform->setType('reqID',PARAM_NOTAGS);
-
         $mform->addElement('textarea','message','Enter what is required');
         $mform->setType('message',PARAM_NOTAGS);
 

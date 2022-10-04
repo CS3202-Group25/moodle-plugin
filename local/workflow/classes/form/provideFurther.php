@@ -27,9 +27,6 @@ class provideFurther extends moodleform{
 
         $mform=$this->_form;
 
-        $mform->addElement('text','reqID','Request ID');
-        $mform->setType('reqID',PARAM_NOTAGS);
-
         $mform->addElement('textarea','details','More Details',);
         $mform->setType('details',PARAM_NOTAGS);
 
