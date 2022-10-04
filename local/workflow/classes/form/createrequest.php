@@ -33,7 +33,7 @@ class createrequest extends moodleform {
         $mform->addElement('static', 'course', 'Course'); // Add elements to your form.
 //        $mform->addHelpButton('course', 'course', 'moodle', 'Hi', false);
         $mform->setType('course', PARAM_NOTAGS);                   // Set type of element.
-        $mform->setDefault('course', 'InXX-SX-XX0000');        // Default value.
+        $mform->setDefault('course', 'Course1');        // Default value.
 
         $mform->addElement('select', 'req_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
         $mform->setType('req_type', PARAM_NOTAGS);                   // Set type of element.

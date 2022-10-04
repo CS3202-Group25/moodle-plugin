@@ -88,7 +88,7 @@ if ($mform->is_cancelled()) {
     $askedmoredetails = 0;
     $state = 'Pending';
     $commentlecturer = NULL;
-    $receivedby = 0;
+    $receivedby = $instructorid;
 
     $requestid = $requestController->createRequest($workflowid, $studentid, $requesttype, $isbatchrequest, $reason, $filesid, $askedmoredetails, $commentlecturer, $sentdate, $receivedby);
 

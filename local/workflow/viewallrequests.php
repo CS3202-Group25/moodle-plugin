@@ -64,7 +64,7 @@ if ($role->shortname == 'student') {
 } else if ($role->shortname == 'editingteacher') {
     $header =array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
 
-    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :lecturerid AND workflowid = :workflowid AND state <> 'pending'";
+    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :lecturerid AND workflowid = :workflowid AND state = 'forwarded'";
     $requests = $DB->get_records_sql($sql, ['lecturerid' => $USER->id, 'workflowid' => $workflowid]);
 }
 
