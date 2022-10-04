@@ -22,6 +22,7 @@
 global $DB, $USER, $OUTPUT, $PAGE, $CFG;
 require_once (__DIR__ . '/../../config.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/form/establishworkflow.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/workflowcontroller.php');
 
 $PAGE->set_url(new moodle_url('/mod/workflow/establishworkflow.php'));
 $PAGE->set_context(\context_system::instance());
@@ -37,17 +38,17 @@ if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot . '/my', 'You cancelled the form');
 } else if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
-    $recordToInsert = new stdClass();
-    $recordToInsert->courseid=($DB->get_record('course',array('shortname'=>$fromform->courseCode),'id'))->id;
-    $recordToInsert->instructorid = 5;
-    $recordToInsert->lecturerid =$USER->id;
-    $recordToInsert->startdate= $fromform->startDate;
-    $recordToInsert->enddate=$fromform->endDate;
+    $workflowController = new workflowController();
+    $courseid=($DB->get_record('course',array('shortname'=>$fromform->courseCode),'id'))->id;
+    $instructorid = 5;
+    $lecturerid =$USER->id;
+    $startdate= $fromform->startDate;
+    $enddate=$fromform->endDate;
 
-    $DB->insert_record(workflow, $recordToInsert);
+    $workflowController->createWorkflow($courseid, $instructorid, $lecturerid, $startdate, $enddate);
 
 //    $message = new stdClass();
-//    $message->component = 'local_workflow'; // Your plugin's name
+//    $message->component = 'mod_workflow'; // Your plugin's name
 //    $message->name = 'Establish Workflow'; // Your notification name from message.php
 //    $message->userfrom = core_user::get_noreply_user(); // If the message is 'from' a specific user you can set them here
 //    $message->userto = ($DB->get_record('user',array('firstname'=>'Balara')))->id;

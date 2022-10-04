@@ -21,17 +21,19 @@
 global $DB, $CFG;
 
 require_once (__DIR__ . '/../../config.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 require_login();
 
 $requestId = $_GET["requestId"];
 $value = $_GET["value"];
 
-function changeStatus($newValue, $requestId, $field){
-    global $DB;
-    $needToUpdate = array_values($DB->get_record('workflow_request', array('requestid'=>$requestId), "requestid"));
-    $DB->set_field_select('workflow_request', $field, $newValue, "requestid $needToUpdate");
-}
+// function changeStatus($newValue, $requestId, $field){
+//     global $DB;
+//     $needToUpdate = array_values($DB->get_record('workflow_request', array('requestid'=>$requestId), "requestid"));
+//     $DB->set_field_select('workflow_request', $field, $newValue, "requestid $needToUpdate");
+// }
+$requestController = new requestController();
 
 if($value === 'cancel') {
     $deleteRequest = $DB->delete_records('workflow_request', ['requestid' => $requestId]);
@@ -46,7 +48,7 @@ if($value === 'cancel') {
     changeStatus('Forwarded To Lecturer', $requestId, 'state');
 //    changeStatus('Lecturer', $requestId, 'receivedby');
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have forwarded the request to lecturer");
-}
+
 
 
 

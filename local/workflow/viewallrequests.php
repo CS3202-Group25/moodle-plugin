@@ -18,7 +18,10 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+global $PAGE, $OUTPUT, $CFG;
+
 require_once(__DIR__ . '/../../config.php');
+require_once ($CFG->dirroot . '/local/workflow/classes/requestController.php');
 
 global $DB, $USER;
 
@@ -27,6 +30,9 @@ $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('View All Requests');
 
 require_login();
+
+$requestController = new requestController();
+$requests = array_values($requestController->getAllRequests());
 
 // $courseid = '2';
 $workflowid = '2';
@@ -64,11 +70,11 @@ if ($role->shortname == 'student') {
 
 echo $OUTPUT->header();
 
-$templatecontent = (object) [
+$templatecontent = (object)[
     'title' => 'View All Requests'
 ];
 
-$templatecontent_table = (object) [
+$templatecontent_table = (object)[
     'requests' => array_values($requests),
     'headers' => array_values($header),
 ];

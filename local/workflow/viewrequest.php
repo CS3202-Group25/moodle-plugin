@@ -20,8 +20,11 @@
  */
 
 
-global $DB, $OUTPUT, $PAGE, $USER;
+global $DB, $OUTPUT, $PAGE, $USER, $CFG;
+
 require_once (__DIR__ . '/../../config.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/dbcontroller.php');
 
 $PAGE->set_url(new moodle_url('/mod/workflow/viewrequest.php'));
 $PAGE->set_context(\context_system::instance());
@@ -29,19 +32,22 @@ $PAGE->set_title("View a Request");
 
 require_login();
 
+$requestController = new requestController();
+$dbController = new dbController();
+
 //$role = $DB->get_record('role', array('shortname' => 'teacher'));
 //$context = get_context_instance(CONTEXT_COURSE, 4);
 //$teachers = get_role_users($role->id, $context);
 
-$requestId = $_GET["requestid"];
-$request = $DB->get_record('workflow_request',array('requestid'=>$requestId));
-$sender = $DB->get_record('user',array('id'=>$request->studentid));
-//$sentdate = date('l jS \of F Y h:i:s A', $sender->sentdate);
+$requestid = $_GET["requestid"];
+
+$request = $requestController->getRequest($requestid);
+$sender = $dbController->getUsersById($request->studentid);
 $sentdate = userdate($request->sentdate);
-$roleId = $DB->get_record('role_assignments',array('userid'=>$USER->id), "roleid");
+$role = $dbController->getRoleById($USER->id);
 //$picture = $DB->get_record('files', array('id'=>69));
 
-if($roleId->roleid === "4"){
+if($role->roleid === "4"){
     $buttons = array(
         array(
             'btnId' => 'forward',
@@ -51,7 +57,7 @@ if($roleId->roleid === "4"){
             'btnId' => 'cancel',
             'btnValue' => 'Cancel',
     ));
-}elseif($roleId->roleid === "3"){
+}elseif($role->roleid === "3"){
     $buttons = array(
         array(
             'btnId' => 'approve',
