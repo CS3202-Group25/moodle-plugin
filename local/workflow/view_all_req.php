@@ -31,10 +31,10 @@ $PAGE->set_title('View All Request');
 
 require_login();
 
-$requestController = new requestController();
-$requests = array_values($requestController->getAllRequests());
+//$requestController = new requestController();
+//$requests = array_values($requestController->getAllRequests());
 
-// $courseid = '2';
+$courseid = '2';
 $workflowid = '2';
 
 $sql = 'SELECT shortname FROM {role} r JOIN {role_assignments} ra ON r.id = ra.roleid WHERE ra.userid = :userid';
@@ -60,6 +60,8 @@ if ($role->shortname == 'student') {
 
     $sql = "SELECT requestid, requesttype, studentid, state FROM {local_workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'pending'";
     $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflowid]);
+//    var_dump($requests);
+//    die;
 
 } else if ($role->shortname == 'editingteacher') {
     $header =array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');

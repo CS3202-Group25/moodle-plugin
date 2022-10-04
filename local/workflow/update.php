@@ -42,6 +42,8 @@ if($value === 'cancel') {
 }elseif($value === 'forward'){
     $requestController->changeStatus('Forwarded', $requestId, 'state');
     redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have forwarded the request to lecturer");
+}elseif($value === 'askMoreDetails') {
+    redirect($CFG->wwwroot . '/local/workflow/askFurther.php');
 }
 
 
