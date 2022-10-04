@@ -21,30 +21,26 @@
 global $DB, $CFG;
 
 require_once (__DIR__ . '/../../config.php');
+require_once ($CFG->dirroot . '/local/workflow/classes/requestController.php');
 
 require_login();
 
 $requestId = $_GET["requestId"];
 $value = $_GET["value"];
 
-function changeStatus($newValue, $requestId, $field){
-    global $DB;
-    $needToUpdate = array_values($DB->get_record('local_workflow_request', array('requestid'=>$requestId), "requestid"));
-    $DB->set_field_select('local_workflow_request', $field, $newValue, "requestid $needToUpdate");
-}
+$requestController = new requestController();
 
 if($value === 'cancel') {
-    $deleteRequest = $DB->delete_records('local_workflow_request', ['requestid' => $requestId]);
+    $requestController->deleteRequest($requestId);
     redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have successfully deleted the request");
 }elseif ($value === 'approve'){
-    changeStatus('Approved', $requestId, 'state');
+    $requestController->changeStatus('Approved', $requestId, 'state');
     redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have approved the request");
 }elseif($value === 'disapprove'){
-    changeStatus('Disapproved', $requestId, 'state');
+    $requestController->changeStatus('Disapproved', $requestId, 'state');
     redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have approved the request");
 }elseif($value === 'forward'){
-    changeStatus('Forwarded To Lecturer', $requestId, 'state');
-//    changeStatus('Lecturer', $requestId, 'receivedby');
+    $requestController->changeStatus('Forwarded', $requestId, 'state');
     redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have forwarded the request to lecturer");
 }
 
