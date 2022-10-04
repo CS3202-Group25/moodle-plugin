@@ -88,7 +88,7 @@ $viewRequestContent = (object) [
     'name' => "{$sender->firstname} {$sender->lastname}",
     'description' => $request->reason,
     'buttons' => $buttons,
-    'requestId' => $requestId
+    'requestId' => $requestid
 
 ];
 
