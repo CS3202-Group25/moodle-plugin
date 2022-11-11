@@ -14,26 +14,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var stdClass $plugin
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot."/local/workflow/classes/form/provideFurther.php");
+require_once($CFG->dirroot."/mod/workflow/classes/form/providefurther.php");
 
 global $DB;
 
 $requestId=$_GET["requestId"];
 
-$PAGE->set_url(new moodle_url('/local/workflow/provideFurther.php'));
+$PAGE->set_url(new moodle_url('/mod/workflow/providefurther.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Send More Details - request ".$requestId);
 
 require_login();
 
-$user_role=($DB->get_record_sql("SELECT * FROM mdl_role_assignments WHERE userid=".$USER->id))->roleid;
+$user_role=($DB->get_record_sql("SELECT * FROM {role_assignments} WHERE userid=".$USER->id))->roleid;
 
 if ($user_role != '5') {
     redirect($CFG->wwwroot.'/my',"You are not allowed to do that!");
@@ -47,12 +47,12 @@ $templatecontext=(object)[
     'description'=>"Ask a student for further details about the selected request.",
 ];
 
-echo $OUTPUT->render_from_template("local_workflow/provideFurther",$templatecontext);
+echo $OUTPUT->render_from_template("mod_workflow/provide_further",$templatecontext);
 
 if($form1->is_cancelled()){
     redirect($CFG->wwwroot.'/my',"You cancelled sending details!");
 }else{
-    $DB->execute("UPDATE mdl_local_workflow_request SET commentlecturer=".$USER->id." WHERE requestid=".$requestId);
+    $DB->execute("UPDATE {workflow_request} SET commentlecturer=".$USER->id." WHERE requestid=".$requestId);
 }
 
 $form1->display();

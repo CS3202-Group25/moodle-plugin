@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -40,7 +40,7 @@ class requestController
         $recordToInsert->receivedby = $receivedby;
 
         try {
-            return $DB->insert_record('local_workflow_request', $recordToInsert);
+            return $DB->insert_record('workflow_request', $recordToInsert);
         } catch (dml_exception $e) {
             return false;
         }
@@ -56,7 +56,7 @@ class requestController
         $recordToInsert->extendtime = $extendtime;
 
         try {
-            return $DB->insert_record('local_request_extend', $recordToInsert, false);
+            return $DB->insert_record('workflow_request_extend', $recordToInsert, false);
         } catch (dml_exception $e) {
             return false;
         }
@@ -66,7 +66,7 @@ class requestController
     {
         global $DB;
         try {
-            return $DB->get_records('local_workflow_request');
+            return $DB->get_records('workflow_request');
         } catch (dml_exception $e) {
             return [];
         }
@@ -75,14 +75,14 @@ class requestController
     public function getRequest($requestid)
     {
         global $DB;
-        return $DB->get_record('local_workflow_request', array('requestid'=>$requestid));
+        return $DB->get_record('workflow_request', array('requestid'=>$requestid));
     }
 
     public function changeStatus($newValue, $requestid, $field){
         global $DB;
         try {
             $needToUpdate = array_values($this->getRequest($requestid));
-            return $DB->set_field_select('local_workflow_request', $field, $newValue, "requestid $needToUpdate->requestid");
+            return $DB->set_field_select('workflow_request', $field, $newValue, "requestid $needToUpdate->requestid");
         } catch (dml_exception $e){
             return false;
         }
@@ -90,6 +90,6 @@ class requestController
 
     public function deleteRequest($requestid){
         global $DB;
-        return $DB->delete_records('local_workflow_request', ['requestid' => $requestid]);
+        return $DB->delete_records('workflow_request', ['requestid' => $requestid]);
     }
 }

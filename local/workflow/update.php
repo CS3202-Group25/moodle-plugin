@@ -39,12 +39,13 @@ if($value === 'cancel') {
     $requestController->deleteRequest($requestId);
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have successfully deleted the request");
 }elseif ($value === 'approve'){
-    $requestController->changeStatus('approved', $requestId);
+    $requestController->changeStatus('approved', $requestId, 'state');
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'disapprove'){
-    $requestController->changeStatus('disapproved', $requestId);
+    $requestController->changeStatus('disapproved', $requestId, 'state');
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'forward'){
-    $requestController->changeStatus('forwarded', $requestId);
+    $requestController->changeStatus('forwarded', $requestId, 'state');
+//    changeStatus('Lecturer', $requestId, 'receivedby');
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have forwarded the request to lecturer");
 }
