@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -21,30 +21,30 @@
 global $DB, $CFG;
 
 require_once (__DIR__ . '/../../config.php');
-require_once ($CFG->dirroot . '/local/workflow/classes/requestController.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 require_login();
 
-$requestId = $_GET["requestId"];
+$requestId = $_GET["requestid"];
 $value = $_GET["value"];
 
+// function changeStatus($newValue, $requestId, $field){
+//     global $DB;
+//     $needToUpdate = array_values($DB->get_record('workflow_request', array('requestid'=>$requestId), "requestid"));
+//     $DB->set_field_select('workflow_request', $field, $newValue, "requestid $needToUpdate");
+// }
 $requestController = new requestController();
 
 if($value === 'cancel') {
     $requestController->deleteRequest($requestId);
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have successfully deleted the request");
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have successfully deleted the request");
 }elseif ($value === 'approve'){
-    $requestController->changeStatus('Approved', $requestId, 'state');
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have approved the request");
+    $requestController->changeStatus('approved', $requestId);
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'disapprove'){
-    $requestController->changeStatus('Disapproved', $requestId, 'state');
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have approved the request");
+    $requestController->changeStatus('disapproved', $requestId);
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'forward'){
-    $requestController->changeStatus('Forwarded', $requestId, 'state');
-    redirect($CFG->wwwroot . '/local/workflow/view_all_req.php', "You have forwarded the request to lecturer");
-}elseif($value === 'askMoreDetails') {
-    redirect($CFG->wwwroot . '/local/workflow/askFurther.php');
+    $requestController->changeStatus('forwarded', $requestId);
+    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have forwarded the request to lecturer");
 }
-
-
-
