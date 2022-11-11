@@ -1,4 +1,7 @@
 <?php
+
+// This file is part of Moodle - http://moodle.org/
+//
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -13,14 +16,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     mod_workflow
- * @author
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @var stdClass $plugin
+ * Strings for component 'workflow', language 'en', branch 'MOODLE_20_STABLE'
+ *
+ * @package   mod_workflow
+ * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'mod_workflow';
-$plugin->version = 2022100300;
-$plugin->requires = 2020061517; // Moodle version
+$string['pluginname'] = 'Workflow Plugin';
+$string['modulenameplural'] = 'Workflows';
+$string['modulename'] = 'Workflow';

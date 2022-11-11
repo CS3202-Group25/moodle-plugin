@@ -13,14 +13,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     mod_workflow
+ * @package     local_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @var stdClass $plugin
  */
 
-defined('MOODLE_INTERNAL') || die();
+use stdClass;
+use dml_exception;
 
-$plugin->component = 'mod_workflow';
-$plugin->version = 2022100300;
-$plugin->requires = 2020061517; // Moodle version
+class dbController
+{
+    public function getUsersById($id){
+        global $DB;
+        return $DB->get_record('user',array('id'=>$id));
+    }
+
+    public function getRoleById($id){
+        global $DB;
+        return $DB->get_record('role_assignments',array('userid'=>$id));
+    }
+}

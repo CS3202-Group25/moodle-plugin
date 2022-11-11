@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -21,7 +21,7 @@
 //moodleform is defined in formslib.php
 require_once("$CFG->libdir/formslib.php");
 
-class create_req extends moodleform {
+class createrequest extends moodleform {
     //Add elements to form
     public function definition() {
         global $CFG;
@@ -33,7 +33,7 @@ class create_req extends moodleform {
         $mform->addElement('static', 'course', 'Course'); // Add elements to your form.
 //        $mform->addHelpButton('course', 'course', 'moodle', 'Hi', false);
         $mform->setType('course', PARAM_NOTAGS);                   // Set type of element.
-        $mform->setDefault('course', 'InXX-SX-XX0000');        // Default value.
+        $mform->setDefault('course', 'Course1');        // Default value.
 
         $mform->addElement('select', 'req_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
         $mform->setType('req_type', PARAM_NOTAGS);                   // Set type of element.

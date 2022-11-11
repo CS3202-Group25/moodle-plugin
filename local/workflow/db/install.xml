@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/workflow/db" VERSION="20130487" COMMENT="XMLDB file for local workflow plugin"
+<XMLDB PATH="mod/workflow/db" VERSION="20130487" COMMENT="XMLDB file for workflow plugin"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
 
     <TABLES>
-        <TABLE NAME="local_workflow" COMMENT="each record a workflow unique for a course">
+        <TABLE NAME="workflow" COMMENT="each record a workflow unique for a course">
             <FIELDS>
-                <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
                 <FIELD NAME="lecturerid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="instructorid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-                <FIELD NAME="enddate" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="instructorid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="enddate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
                 
             </FIELDS>
             <KEYS>
-                <KEY NAME="primary" TYPE="primary" FIELDS="workflowid"/>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
                 <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
                 <KEY NAME="lecturerid" TYPE="foreign" FIELDS="lecturerid" REFTABLE="user" REFFIELDS="id"/>                
                 <KEY NAME="instructorid" TYPE="foreign" FIELDS="instructorid" REFTABLE="user" REFFIELDS="id"/>
             </KEYS>
         </TABLE>
 
-        <TABLE NAME="local_workflow_request" COMMENT="each record a unique request">
+        <TABLE NAME="workflow_request" COMMENT="each record a unique request">
             <FIELDS>
                 <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
                 <FIELD NAME="workflowid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -40,13 +41,13 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="requestid"/>
-                <KEY NAME="workflowid" TYPE="foreign" FIELDS="workflowid" REFTABLE="local_workflow" REFFIELDS="workflowid"/>
+                <KEY NAME="workflowid" TYPE="foreign" FIELDS="workflowid" REFTABLE="workflow" REFFIELDS="workflowid"/>
                 <KEY NAME="studentid" TYPE="foreign" FIELDS="studentid" REFTABLE="user" REFFIELDS="id"/>                
                 <KEY NAME="receivedby" TYPE="foreign" FIELDS="receivedby" REFTABLE="user" REFFIELDS="id"/>
             </KEYS>
         </TABLE>
 
-        <TABLE NAME="local_request_files" COMMENT="each record a file for request">
+        <!-- <TABLE NAME="local_request_files" COMMENT="each record a file for request">
             <FIELDS>
                 <FIELD NAME="requestfileid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
                 <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>            
@@ -57,9 +58,9 @@
                 <KEY NAME="requestid" TYPE="foreign" FIELDS="requestid" REFTABLE="local_workflow_request" REFFIELDS="requestid"/>
                 <KEY NAME="fileid" TYPE="foreign" FIELDS="fileid" REFTABLE="files" REFFIELDS="id"/>              
             </KEYS>
-        </TABLE>
+        </TABLE> -->
 
-         <TABLE NAME="local_request_extend" COMMENT="each record extend time for a deadline extend request">
+         <TABLE NAME="workflow_request_extend" COMMENT="each record extend time for a deadline extend request">
 
             <FIELDS>
                 <FIELD NAME="requestextendid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>            
@@ -71,7 +72,7 @@
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="requestextendid"/>
-                <KEY NAME="requestid" TYPE="foreign" FIELDS="requestid" REFTABLE="local_workflow_request" REFFIELDS="requestid"/>             
+                <KEY NAME="requestid" TYPE="foreign" FIELDS="requestid" REFTABLE="workflow_request" REFFIELDS="requestid"/>             
             </KEYS>
         </TABLE>
 

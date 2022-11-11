@@ -13,14 +13,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     mod_workflow
+ * @package     local_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var stdClass $plugin
  */
 
-defined('MOODLE_INTERNAL') || die();
+require_once("$CFG->libdir/formslib.php");
 
-$plugin->component = 'mod_workflow';
-$plugin->version = 2022100300;
-$plugin->requires = 2020061517; // Moodle version
+class askFurther extends moodleform{
+    public function definition(){
+        global $CFG;
+
+        $mform=$this->_form;
+
+        $mform->addElement('textarea','message','Enter what is required');
+        $mform->setType('message',PARAM_NOTAGS);
+
+        $this->add_action_buttons(true,"Send Inquiry");
+    }
+
+    function validation($data, $files) {
+        return array();
+    }
+}
+?>

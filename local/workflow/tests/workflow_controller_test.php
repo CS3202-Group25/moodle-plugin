@@ -52,7 +52,5 @@ class workflow_controller_test extends advanced_testcase
         $lastRecord = array_pop($workflows);
 
         $this->assertEquals(1, $lastRecord->courseid);
-//        $test_workflow_name = $workflow->getName($record->id);
-//        $this->assertEquals("Test workflow", $test_workflow_name);
     }
 }

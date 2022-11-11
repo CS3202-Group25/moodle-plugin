@@ -13,19 +13,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 global $CFG, $PAGE, $USER, $OUTPUT, $DB;
 require_once(__DIR__ . '/../../config.php');
-require_once ($CFG->dirroot . '/local/workflow/classes/requestController.php');
-require_once($CFG->dirroot . '/local/workflow/classes/form/create_req.php');
+//include create_req.php
+require_once($CFG->dirroot . '/mod/workflow/classes/form/createrequest.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
-$PAGE->set_url(new moodle_url('/local/workflow/create_req.php'));
+$PAGE->set_url(new moodle_url('/mod/workflow/createrequest.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('Create Request');
+
+require_login();
 
 // get data from db
 $workflowid = '2';
@@ -34,13 +37,14 @@ $assessment = array('Quiz'=>array('1'=>'Quiz 01', '2'=>'Quiz 02', '3'=>'Quiz 03'
 
 // display form
 //Instantiate simplehtml_form
-$mform = new create_req(null, array('assessment'=>$assessment));
+$mform = new createrequest(null, array('assessment'=>$assessment));
+
 $requestController = new requestController();
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
     //Handle form cancel operation, if cancel button is present on form
-    redirect($CFG->wwwroot . '/local/workflow/student_index.php', 'You cancelled the create request form');
+    redirect($CFG->wwwroot . '/mod/workflow/student_index.php', 'You cancelled the create request form');
 } else if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
 
@@ -104,7 +108,7 @@ $templatecontent = (object) [
     'title' => 'Create Request'
 ];
 
-echo $OUTPUT->render_from_template('local_workflow/workflow_heading', $templatecontent);
+echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templatecontent);
 
 //displays the form
 $mform->display();
