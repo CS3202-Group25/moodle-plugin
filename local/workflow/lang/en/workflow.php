@@ -23,4 +23,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// $string['workflowtdisabled'] = 'The legacy "Workflow" activity is disabled.';
+$string['requesttype'] = 'Request Type';
+$string['assessmenttype'] = 'Assessment Type';
+$string['assessment'] = 'Assessment';
+$string['isbatchrequest'] = 'Is this a batch request';
+$string['extendtime'] = 'Extend Time';
+$string['reason'] = 'Reason for Extention';
