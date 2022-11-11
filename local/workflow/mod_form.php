@@ -24,7 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
 
+global $DB;
+global $CFG;
+
 require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/workflow/lib.php');
 
 /**
  * Disabled workflow settings form.
@@ -41,8 +45,50 @@ class mod_workflow_mod_form extends moodleform_mod {
      * @return void
      */
     public function definition() {
-        // print_error('workflowdisabled', 'workflow');
-    }
 
+        global $DB, $USER;
+
+        $courseid = optional_param('course', true, PARAM_INT);
+        $context = context_course::instance($courseid);
+        $lecturerid = $USER->id;
+
+        $mform = $this->_form;
+
+        $mform->addElement('text', 'name', "Name");
+        $mform->setDefault('name', "");
+        $mform->setType('name', PARAM_TEXT);
+        $mform->addRule('name', null, 'required', null, 'client');
+
+        $mform->addElement('hidden', 'courseid');
+        $mform->setType('courseid', PARAM_INT);
+        $mform->setDefault('courseid', $courseid);
+
+        $mform->addElement('hidden', 'lecturerid');
+        $mform->setType('lecturerid', PARAM_INT);
+        $mform->setDefault('lecturerid', $lecturerid);
+
+        $instructorids = $DB->get_fieldset_select('role_assignments', 'userid', 'contextid = :contextid and roleid=:roleid', [
+            'contextid' => $context->id,
+            'roleid' => '4',
+        ]);
+
+        $instructors = [];
+
+        foreach ($instructorids as $instructorid) {
+            $instructor = $DB->get_record('user', ['id' => $instructorid]);
+            $instructors[$instructor->id] = $instructor->firstname . ' ' . $instructor->lastname;
+        }
+
+        $mform->addElement('select', 'instructorid', 'Instructor', $instructors);
+
+        $mform->addElement('date_selector', 'startDate', get_string('from'));
+
+        $mform->addElement('date_selector', 'endDate', get_string('to'));
+
+        $this->standard_coursemodule_elements();
+
+        $this->add_action_buttons();
+
+    }
 
 }
