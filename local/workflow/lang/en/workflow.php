@@ -23,6 +23,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+
 $string['pluginname'] = 'Workflow Plugin';
 $string['modulenameplural'] = 'Workflows';
 $string['modulename'] = 'Workflow';
+
