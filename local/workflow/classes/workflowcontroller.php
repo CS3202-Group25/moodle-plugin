@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,7 +34,7 @@ class workflowController
         $recordToInsert->enddate = $enddate;
 
         try {
-            return $DB->insert_record('local_workflow', $recordToInsert, false);
+            return $DB->insert_record('workflow', $recordToInsert, false);
         } catch (dml_exception $e) {
             return false;
         }
@@ -43,20 +43,20 @@ class workflowController
     public function deleteWorkflow($workflowid)
     {
         global $DB;
-        $DB->delete_records('local_workflow', ['workflowid' => $workflowid]);
+        $DB->delete_records('workflow', ['workflowid' => $workflowid]);
     }
 
     public function getWorkflow($workflowid)
     {
         global $DB;
-        return $DB->get_record('local_workflow', array('workflowid' => $workflowid));
+        return $DB->get_record('workflow', array('workflowid' => $workflowid));
     }
 
     public function getAllWorkflows()
     {
         global $DB;
         try {
-            return $DB->get_records('local_workflow');
+            return $DB->get_records('workflow');
         } catch (dml_exception $e) {
             return [];
         }

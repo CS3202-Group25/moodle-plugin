@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var stdClass $plugin
@@ -21,10 +21,10 @@
 
 global $DB, $USER, $OUTPUT, $PAGE, $CFG;
 require_once (__DIR__ . '/../../config.php');
-require_once ($CFG->dirroot . '/local/workflow/classes/form/establishWorkflow.php');
-require_once ($CFG->dirroot . '/local/workflow/classes/workflowController.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/form/establishworkflow.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/workflowcontroller.php');
 
-$PAGE->set_url(new moodle_url('/local/workflow/establishWorkflow.php'));
+$PAGE->set_url(new moodle_url('/mod/workflow/establishworkflow.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("Establish Workflow");
 
@@ -48,7 +48,7 @@ if ($mform->is_cancelled()) {
     $workflowController->createWorkflow($courseid, $instructorid, $lecturerid, $startdate, $enddate);
 
 //    $message = new stdClass();
-//    $message->component = 'local_workflow'; // Your plugin's name
+//    $message->component = 'mod_workflow'; // Your plugin's name
 //    $message->name = 'Establish Workflow'; // Your notification name from message.php
 //    $message->userfrom = core_user::get_noreply_user(); // If the message is 'from' a specific user you can set them here
 //    $message->userto = ($DB->get_record('user',array('firstname'=>'Balara')))->id;
@@ -66,7 +66,7 @@ if ($mform->is_cancelled()) {
 //    $messageid = message_send($message);
 
     $courseName = ($DB->get_record('course',array('shortname'=>$fromform->courseCode),'fullname'))->fullname;
-    redirect($CFG->wwwroot . '/local/workflow/establishWorkflow.php', "You have successfully established a workflow for {$courseName}");
+    redirect($CFG->wwwroot . '/mod/workflow/establishworkflow.php', "You have successfully established a workflow for {$courseName}");
 }
 
 echo $OUTPUT->header();
@@ -75,7 +75,7 @@ $templateContent = (object) [
     'title' => 'Establish Workflow'
 ];
 
-echo $OUTPUT->render_from_template('local_workflow/workflow_heading', $templateContent);
+echo $OUTPUT->render_from_template('workflow/workflow_heading', $templateContent);
 
 $mform->display();
 
