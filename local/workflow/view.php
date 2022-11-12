@@ -24,12 +24,91 @@
 
 require('../../config.php');
 
-global $DB;
+global $DB, $OUTPUT, $PAGE, $USER;
 
 require_login();
 
 $id = required_param('id', PARAM_INT);
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'workflow');
-$instance = $DB->get_record('workflow', ['id'=> $cm->instance], '*', MUST_EXIST);
+$workflow = $DB->get_record('workflow', ['id'=> $cm->instance], '*', MUST_EXIST);
 $context = context_course::instance($course->id);
+
+$PAGE->set_context(\context_system::instance());
+$PAGE->set_title($workflow->name);
+
+$roleid = $DB->get_record('role_assignments', array('contextid'=>$context->id, 'userid'=>$USER->id)) -> roleid;
+
+$rolename = $DB->get_record('role', array('id'=>$roleid)) -> shortname;
+
+$create_capability = has_capability('mod/workflow:createrequest', $context);
+$forward_capability = has_capability('mod/workflow:forwardrequest', $context);
+$approve_capability = has_capability('mod/workflow:approverequest', $context);
+
+echo $OUTPUT->header();
+
+$templatecontent = (object) [
+    'title' => $workflow->name
+];
+
+echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templatecontent);
+
+if($create_capability){
+    $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Received By', 4=>'Status');
+
+    $sql = "SELECT requestid, requesttype, receivedby, state FROM {workflow_request} WHERE studentid = :studentid AND workflowid = :workflowid";
+    $requests = $DB->get_records_sql($sql, ['studentid' => $USER->id, 'workflowid' => $workflow->id]);
+
+    $receivers = array();
+    foreach ($requests as $key => $value) {
+        $receiverid = $DB->get_record_sql("SELECT roleid FROM {role_assignments} ra JOIN {workflow_request} lwr ON ra.userid = lwr.receivedby AND lwr.receivedby = :receiver", ['receiver' => $value->receivedby]);
+        $receiver = $DB->get_record_sql("SELECT shortname FROM {role} WHERE id = :roleid", ['roleid' => $receiverid->roleid]);
+
+        $requests[$key]->receivedby = ucfirst($receiver->shortname);
+    }
+    $templatecontent_table = (object)[
+        'requests' => array_values($requests),
+        'headers' => array_values($header),
+        'cmid' => $cm->id,
+        'buttons' => array(
+            array(
+                'btnId' => 'create_req',
+                'btnValue' => 'Create a New Request',
+            ))
+    ];
+
+    echo$OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+}
+elseif($forward_capability){
+    $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
+
+    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'pending'";
+    $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflow->id]);
+
+    $templatecontent_table = (object)[
+        'requests' => array_values($requests),
+        'headers' => array_values($header),
+        'cmid' => $cm->id,
+    ];
+
+    echo$OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+}
+elseif($approve_capability){
+    $header =array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
+
+    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :lecturerid AND workflowid = :workflowid AND state = 'forwarded'";
+    $requests = $DB->get_records_sql($sql, ['lecturerid' => $USER->id, 'workflowid' => $workflow->id]);
+
+    $templatecontent_table = (object)[
+        'requests' => array_values($requests),
+        'headers' => array_values($header),
+        'cmid' => $cm->id,
+    ];
+
+    echo$OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+}
+
+echo $OUTPUT->footer();
+
+
+
 
