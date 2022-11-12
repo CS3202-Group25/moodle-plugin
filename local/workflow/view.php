@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,15 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'workflow', language 'en', branch 'MOODLE_20_STABLE'
+ * Activity view page for the plugintype_pluginname plugin.
  *
  * @package   mod_workflow
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @copyright Year, You Name <your@email.address>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require('../../config.php');
 
-$string['pluginname'] = 'Workflow Plugin';
-$string['modulenameplural'] = 'Workflows';
-$string['modulename'] = 'Workflow';
+global $DB;
+
+require_login();
+
+$id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'workflow');
+$instance = $DB->get_record('workflow', ['id'=> $cm->instance], '*', MUST_EXIST);
+$context = context_course::instance($course->id);
 
