@@ -35,11 +35,8 @@ require_login();
 $requestController = new requestController();
 $dbController = new dbController();
 
-//$role = $DB->get_record('role', array('shortname' => 'teacher'));
-//$context = get_context_instance(CONTEXT_COURSE, 4);
-//$teachers = get_role_users($role->id, $context);
-
-$requestid = $_GET["requestid"];
+$requestid = required_param('requestid', PARAM_INT);
+$cmid = required_param('cmid', PARAM_INT);
 
 $request = $requestController->getRequest($requestid);
 $sender = $dbController->getUsersById($request->studentid);
@@ -88,7 +85,8 @@ $viewRequestContent = (object) [
     'name' => "{$sender->firstname} {$sender->lastname}",
     'description' => $request->reason,
     'buttons' => $buttons,
-    'requestId' => $requestid
+    'requestId' => $requestid,
+    'cmid'=> $cmid
 
 ];
 

@@ -25,27 +25,25 @@ require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 require_login();
 
-$requestId = $_GET["requestid"];
 $value = $_GET["value"];
+$requestid = required_param('requestid', PARAM_INT);
+$cmid = required_param('cmid', PARAM_INT);
 
-// function changeStatus($newValue, $requestId, $field){
-//     global $DB;
-//     $needToUpdate = array_values($DB->get_record('workflow_request', array('requestid'=>$requestId), "requestid"));
-//     $DB->set_field_select('workflow_request', $field, $newValue, "requestid $needToUpdate");
-// }
+$workflowid = $DB->get_record('workflow_request', array('requestid' => $requestid))->workflowid;
+$lecturerid = $DB->get_record('workflow', array('id'=>$workflowid))->lecturerid;
 $requestController = new requestController();
 
 if($value === 'cancel') {
-    $requestController->deleteRequest($requestId);
+    $requestController->deleteRequest($requestid);
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have successfully deleted the request");
 }elseif ($value === 'approve'){
-    $requestController->changeStatus('approved', $requestId, 'state');
+    $requestController->changeStatus($requestid, 'Approved');
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'disapprove'){
-    $requestController->changeStatus('disapproved', $requestId, 'state');
+    $requestController->changeStatus($requestid, 'Disapproved');
     redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
 }elseif($value === 'forward'){
-    $requestController->changeStatus('forwarded', $requestId, 'state');
-//    changeStatus('Lecturer', $requestId, 'receivedby');
-    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have forwarded the request to lecturer");
+    $requestController->changeStatus($requestid, 'Forwarded');
+    $requestController->changeReceiver($requestid, $lecturerid);
+    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, "You have forwarded the request to lecturer");
 }

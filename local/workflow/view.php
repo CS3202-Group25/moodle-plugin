@@ -65,46 +65,69 @@ if($create_capability){
 
         $requests[$key]->receivedby = ucfirst($receiver->shortname);
     }
-    $templatecontent_table = (object)[
-        'requests' => array_values($requests),
-        'headers' => array_values($header),
-        'cmid' => $cm->id,
-        'buttons' => array(
-            array(
-                'btnId' => 'create_req',
-                'btnValue' => 'Create a New Request',
-            ))
-    ];
 
-    echo$OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+    if(sizeof($requests) != 0) {
+        $templatecontent_table = (object)[
+            'requests' => array_values($requests),
+            'headers' => array_values($header),
+            'cmid' => $cm->id,
+            'buttons' => array(
+                array(
+                    'btnId' => 'create_req',
+                    'btnValue' => 'Create a New Request',
+                ))
+        ];
+
+        echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+    }else{
+        $templatecontent_table = (object)[
+            'cmid' => $cm->id,
+            'buttons' => array(
+                array(
+                    'btnId' => 'create_req',
+                    'btnValue' => 'Create a New Request',
+                ))
+        ];
+        echo '<h3>There is no sent requests</h3>';
+
+        echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+    }
 }
 elseif($forward_capability){
     $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
 
-    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'pending'";
+    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'Pending'";
     $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflow->id]);
 
-    $templatecontent_table = (object)[
-        'requests' => array_values($requests),
-        'headers' => array_values($header),
-        'cmid' => $cm->id,
-    ];
+    if(sizeof($requests) != 0) {
+        $templatecontent_table = (object)[
+            'requests' => array_values($requests),
+            'headers' => array_values($header),
+            'cmid' => $cm->id,
+        ];
 
-    echo$OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+        echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+    }else{
+        echo '<h3>There is no received requests</h3>';
+    }
 }
 elseif($approve_capability){
     $header =array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
 
-    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :lecturerid AND workflowid = :workflowid AND state = 'forwarded'";
+    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :lecturerid AND workflowid = :workflowid AND state = 'Forwarded'";
     $requests = $DB->get_records_sql($sql, ['lecturerid' => $USER->id, 'workflowid' => $workflow->id]);
 
-    $templatecontent_table = (object)[
-        'requests' => array_values($requests),
-        'headers' => array_values($header),
-        'cmid' => $cm->id,
-    ];
+    if(sizeof($requests) != 0) {
+        $templatecontent_table = (object)[
+            'requests' => array_values($requests),
+            'headers' => array_values($header),
+            'cmid' => $cm->id,
+        ];
 
-    echo$OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+        echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+    }else {
+        echo '<h3>There is no received requests</h3>';
+    }
 }
 
 echo $OUTPUT->footer();
