@@ -78,12 +78,32 @@ class requestController
         return $DB->get_record('workflow_request', array('requestid'=>$requestid));
     }
 
-    public function changeStatus($newValue, $requestid, $field){
+    public function changeStatus($requestid, $state){
         global $DB;
+        $sql = 'update {workflow_request} set state = :state where requestid= :requestid';
+        $params = [
+            'state' => $state,
+            'requestid' => $requestid,
+        ];
+
         try {
-            $needToUpdate = array_values($this->getRequest($requestid));
-            return $DB->set_field_select('workflow_request', $field, $newValue, "requestid $needToUpdate->requestid");
-        } catch (dml_exception $e){
+            return $DB->execute($sql, $params);
+        } catch (dml_exception $e) {
+            return false;
+        }
+    }
+
+    public function changeReceiver($requestid, $lecturerid){
+        global $DB;
+        $sql = 'update {workflow_request} set receivedby = :receivedby where requestid= :requestid';
+        $params = [
+            'receivedby' => $lecturerid,
+            'requestid' => $requestid,
+        ];
+
+        try {
+            return $DB->execute($sql, $params);
+        } catch (dml_exception $e) {
             return false;
         }
     }

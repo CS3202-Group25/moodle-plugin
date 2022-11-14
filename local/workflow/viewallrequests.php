@@ -31,9 +31,6 @@ $PAGE->set_title('View All Requests');
 
 require_login();
 
-// $requestController = new requestController();
-// $requests = array_values($requestController->getAllRequests());
-
 // $courseid = '2';
 $workflowid = '2';
 

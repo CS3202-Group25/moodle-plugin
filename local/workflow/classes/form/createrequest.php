@@ -18,22 +18,29 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+global $CFG;
 //moodleform is defined in formslib.php
 require_once("$CFG->libdir/formslib.php");
 
 class createrequest extends moodleform {
     //Add elements to form
     public function definition() {
-        global $CFG;
+        global $DB, $COURSE;
 
         $mform = $this->_form; // Don't forget the underscore!
 
         $mform->disable_form_change_checker();
 
-        $mform->addElement('static', 'course', 'Course'); // Add elements to your form.
-//        $mform->addHelpButton('course', 'course', 'moodle', 'Hi', false);
-        $mform->setType('course', PARAM_NOTAGS);                   // Set type of element.
-        $mform->setDefault('course', 'Course1');        // Default value.
+        $cmid = optional_param('cmid',true, PARAM_INT);
+        $courseid = $DB->get_record('course_modules', array('id'=>$cmid))->course;
+
+//        $mform->addElement('static', 'course', 'Course'); // Add elements to your form.
+////        $mform->addHelpButton('course', 'course', 'moodle', 'Hi', false);
+//        $mform->setType('course', PARAM_NOTAGS);                   // Set type of element.
+//        $mform->setDefault('course', 'Course1');        // Default value.
+
+        $mform->addElement('hidden', 'cmid');
+        $mform->setType('cmid', PARAM_INT);
 
         $mform->addElement('select', 'req_type', 'Request Type', array('Extend Deadline', 'Recorrection')); // Add elements to your form.
         $mform->setType('req_type', PARAM_NOTAGS);                   // Set type of element.
@@ -44,12 +51,24 @@ class createrequest extends moodleform {
         $mform->hideIf('assessment_type', 'req_type', 'eq', 1);
         // $mform->addRule('assessment_type', 'Missing Assessment Type', 'required', null, 'server');
 
-        $mform->addElement('select', 'assessment_quiz', 'Assessment', array_values($this->_customdata['assessment']['Quiz'])); // Add elements to your form.
+        $quizzes = $DB->get_records('quiz', array('course'=>$courseid));
+
+        $quiznames[null] = 'None';
+        foreach ($quizzes as $quiz) {
+            $quiznames[$quiz->id] = $quiz->name;
+        }
+        $mform->addElement('select', 'assessment_quiz', 'Assessment', $quiznames); // Add elements to your form.
         $mform->setType('assessment_quiz', PARAM_NOTAGS);                   // Set type of element.
         $mform->hideIf('assessment_quiz', 'req_type', 'eq', 1);
         $mform->hideIf('assessment_quiz', 'assessment_type', 'eq', 1);
 
-        $mform->addElement('select', 'assessment_assign', 'Assessment', array_values($this->_customdata['assessment']['Assignment'])); // Add elements to your form.
+        $assignments = $DB->get_records('assign', array('course'=>$courseid));
+
+        $assignmentnames[null] = 'None';
+        foreach ($assignments as $assignment) {
+            $assignmentnames[$assignment->id] = $assignment->name;
+        }
+        $mform->addElement('select', 'assessment_assign', 'Assessment', $assignmentnames); // Add elements to your form.
         $mform->setType('assessment_assign', PARAM_NOTAGS);                   // Set type of element.
         $mform->hideIf('assessment_assign', 'req_type', 'eq', 1);
         $mform->hideIf('assessment_assign', 'assessment_type', 'eq', 0);
@@ -97,10 +116,6 @@ class createrequest extends moodleform {
         $mform->setType('file_manager', PARAM_LOCALURL);
 
         $this->add_action_buttons(true, get_string('savechanges'));
-
-        // $this->set_data($data);
-
-        // echo $data;
 
     }
     //Custom validation should be added here

@@ -30,24 +30,21 @@ $PAGE->set_title('Create Request');
 
 require_login();
 
-// get data from db
-$workflowid = '2';
-$instructorid = '5';
-$assessment = array('Quiz'=>array('1'=>'Quiz 01', '2'=>'Quiz 02', '3'=>'Quiz 03'), 'Assignment'=>array('11'=>'Assignment 01', '12'=>'Assignment 02', '13'=>'Assignment 03'));
+$cmid = optional_param('cmid', true, PARAM_INT);
 
-// display form
+$workflowid = $DB->get_record('course_modules', array('id'=>$cmid))->instance;
+$instructorid = $DB->get_record('workflow', array('id'=> $workflowid))->instructorid;
+
 //Instantiate simplehtml_form
-$mform = new createrequest(null, array('assessment'=>$assessment));
+$mform = new createrequest();
 
 $requestController = new requestController();
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
-    //Handle form cancel operation, if cancel button is present on form
-    redirect($CFG->wwwroot . '/mod/workflow/student_index.php', 'You cancelled the create request form');
+    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You cancelled the create request form');
 } else if ($fromform = $mform->get_data()) {
     //In this case you process validated data. $mform->get_data() returns data posted in form.
-
     $studentid = $USER->id;
     
     if ($fromform->req_type == 0) {
@@ -57,10 +54,10 @@ if ($mform->is_cancelled()) {
 
         if ($fromform->assessment_type == 0) {
             $assessmenttype = 'Quiz';
-            $assessmentid = (array_keys($assessment['Quiz'])[$fromform->assessment_quiz]);
+            $assessmentid = $fromform->assessment_quiz;
         } else {
             $assessmenttype = 'Assignment';
-            $assessmentid = (array_keys($assessment['Assignment'])[$fromform->assessment_assign]);
+            $assessmentid = $fromform->assessment_assign;
         }
     
         $isbatchrequest = $fromform->yesno;
@@ -70,7 +67,6 @@ if ($mform->is_cancelled()) {
         $isbatchrequest = 0;
     }
 
-//    $recordtoinsert->studentid = $fromform->index_no;
     $reason = $fromform->reason;
 
     $sql = "SELECT id FROM {files} WHERE itemid = :itemid";
@@ -96,6 +92,8 @@ if ($mform->is_cancelled()) {
         $requestController->createRequestExtend($requestid, $assessmenttype, $assessmentid, $extendtime);
     }
 
+    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted the create request form');
+
 } else {
     // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
     // or on the first display of the form.
@@ -103,6 +101,10 @@ if ($mform->is_cancelled()) {
 }
 
 echo $OUTPUT->header();
+
+$temp = new stdClass();
+$temp->cmid = $cmid;
+$mform->set_data($temp);
 
 $templatecontent = (object) [
     'title' => 'Create Request'
