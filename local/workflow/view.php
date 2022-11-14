@@ -88,7 +88,7 @@ if($create_capability){
                     'btnValue' => 'Create a New Request',
                 ))
         ];
-        echo '<h3>There is no sent requests</h3>';
+        echo '<p style="text-align: center;margin-top:25px;">No sent requests</p>';
 
         echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
     }
@@ -108,7 +108,7 @@ elseif($forward_capability){
 
         echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
     }else{
-        echo '<h3>There is no received requests</h3>';
+        echo '<p style="text-align: center;margin-top:25px;">No received requests</p>';
     }
 }
 elseif($approve_capability){
@@ -126,7 +126,7 @@ elseif($approve_capability){
 
         echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
     }else {
-        echo '<h3>There is no received requests</h3>';
+        echo '<p style="text-align: center;margin-top:25px;">No received requests</p>';
     }
 }
 
