@@ -30,6 +30,7 @@
         height: 50px;
         border-radius: 50%;
     }
+
 </style>
 <div class="row">
     <div>
@@ -41,13 +42,17 @@
     </div>
 </div>
 
-<!--<div class="row">-->
-<!--    <div class="col-sm">Reason</div>-->
-<!--    <div class="col-sm">{{description}}</div>-->
-<!--</div>-->
+<p class="lh-base">Student Index Number : {{studentid}}</p>
+<p class="lh-base">Request Type : {{requesttype}}</p>
+
+{{#isassessment}}
+    <p class="lh-base">Assessment Type : {{assessmenttype}}</p>
+    <p class="lh-base">Assessment Name : {{assessment}}</p>
+    <p class="lh-base">Required Extend Time : {{extendtime}}</p>
+{{/isassessment}}
 
 <p class="lh-base">Reason : {{description}}</p>
+
 {{#buttons}}
-<!--    <input type="button" class="btn btn-primary" id="{{btnId}}" value="{{btnValue}} ">-->
     <a href="/mod/workflow/update.php?requestid={{requestId}}&value={{btnId}}&cmid={{cmid}}", class="btn btn-primary">{{btnValue}}</a>
 {{/buttons}}

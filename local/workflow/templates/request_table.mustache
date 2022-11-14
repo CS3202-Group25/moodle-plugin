@@ -44,7 +44,8 @@
 
     {{#requests}}
         <tr onclick="window.location='/mod/workflow/viewrequest.php?requestid={{requestid}}&cmid={{cmid}}';">
-        <td scope="row"><img src="./pix/icon.png" alt="workflow-icon" class="icon">{{requestid}}</a></td>
+        <td scope="row"><img src="./pix/icon.png" alt="workflow-icon" class="icon">{{requestid}}</td>
+<!--        <td>{{requestid}}</td>-->
         <td>{{requesttype}}</td>
         <td>{{studentid}}{{receivedby}}</td>
         <td>{{state}}</td>

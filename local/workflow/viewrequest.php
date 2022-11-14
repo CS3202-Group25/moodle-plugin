@@ -42,7 +42,6 @@ $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
 $sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
 $role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
-//$picture = $DB->get_record('files', array('id'=>69));
 
 if($role->roleid === "4"){
     $buttons = array(
@@ -65,11 +64,13 @@ if($role->roleid === "4"){
             'btnValue' => 'Disapprove',
         ));
 }else{
-    $buttons = array(
-        array(
-            'btnId' => 'cancelStudent',
-            'btnValue' => 'Cancel',
-        ));
+    if($request->state == "Pending") {
+        $buttons = array(
+            array(
+                'btnId' => 'cancelStudent',
+                'btnValue' => 'Cancel',
+            ));
+    }
 }
 
 echo $OUTPUT->header();
@@ -95,20 +96,32 @@ if($request->requesttype == "Extend Deadline"){
         'date' => $sentdate,
         'name' => "{$sender->firstname} {$sender->lastname}",
         'studentid' =>$sender->id,
-        'requesttype' => $requestextend->assessmenttype,
+        'requesttype' => $request->requesttype,
+        'assessmenttype' => $requestextend->assessmenttype,
         'assessment' => $assessment,
         'extendtime' => userdate($extendtime),
         'description' => $request->reason,
         'buttons' => $buttons,
         'requestId' => $requestid,
-        'cmid'=> $cmid
+        'cmid'=> $cmid,
+        'isassessment' => true
+    ];
+
+    echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
+}else{
+    $viewRequestContent = (object) [
+        'date' => $sentdate,
+        'name' => "{$sender->firstname} {$sender->lastname}",
+        'studentid' =>$sender->id,
+        'requesttype' => $request->requesttype,
+        'description' => $request->reason,
+        'buttons' => $buttons,
+        'requestId' => $requestid,
+        'cmid'=> $cmid,
+        'isassessment' => false
     ];
 
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 }
-
-
-
-
 
 echo $OUTPUT->footer();
