@@ -29,7 +29,7 @@ use dml_exception;
 
 class messageSender{
 
-    public function sendApprove($usertoid,$msg,$cmid){
+    public function send($usertoid, $cmid, $requestid, $value){
         global $USER, $DB;
 
         $message = new \core\message\message();
@@ -37,21 +37,81 @@ class messageSender{
         $message->name = 'workflow_notification'; // Your notification name from message.php
         $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
         $message->userto = $usertoid;
-        $message->subject = 'Request Approved';
-        $message->fullmessage = $msg;
+
+        $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
+        $courseid = $DB->get_record('course_modules', array('id'=>$cmid))->course;
+        $coursename = $DB->get_record('course', array('id'=> $courseid))->fullname;
+        if($request->requesttype == "Extend Deadline"){
+            $requestextend = $DB->get_record('workflow_request_extend', array('requestid'=>$requestid));
+            if ($requestextend->assessmenttype == "Quiz") {
+                $assessment = $DB->get_record('quiz', array('id'=>$requestextend->assessmentid))->name;
+
+            } elseif ($requestextend->assessmenttype == "Assignment") {
+                $assessment = $DB->get_record('assign', array('id'=>$requestextend->assessmentid))->name;
+            }
+
+            if($value == "approve"){
+                $message->subject = 'Request Approved';
+                $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been approved by the lecturer. The new deadline has been updated in the moodle";
+                $message->fullmessage = $msg;
+            }elseif ($value == "disapprove"){
+                $message->subject = 'Request Disapproved';
+                $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been disapproved by the lecturer.";
+                $message->fullmessage = $msg;
+            }elseif ($value == "cancelIns"){
+                $message->subject = 'Request Cancelled';
+                $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been cancelled by the instructor without forwarding to the lecturer.";
+                $message->fullmessage = $msg;
+            }elseif ($value == "forward"){
+                $role = $DB->get_record('role_assignments',array('userid'=>$usertoid));
+                $message->subject = 'Request Forwarded';
+                if($role->roleid === "5") {
+                    $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been forwarded to the lecturer by the instructor.";
+                    $message->fullmessage = $msg;
+                }else{
+                    $msg = "A request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been forwarded to you by the instructor.";
+                    $message->fullmessage = $msg;
+                }
+            }
+        }else{
+            if($value == "approve"){
+                $message->subject = 'Request Approved';
+                $msg = "Your request for recorrection in $coursename module has been approved by the lecturer. The new deadline has been updated in the moodle";
+                $message->fullmessage = $msg;
+            }elseif ($value == "disapprove"){
+                $message->subject = 'Request Disapproved';
+                $msg = "Your request for recorrection in $coursename module has been disapproved by the lecturer.";
+                $message->fullmessage = $msg;
+            }elseif ($value == "cancelIns"){
+                $message->subject = 'Request Cancelled';
+                $msg = "Your request for recorrection in $coursename module has been cancelled by the instructor without forwarding to the lecturer.";
+                $message->fullmessage = $msg;
+            }elseif ($value == "forward"){
+                $role = $DB->get_record('role_assignments',array('userid'=>$usertoid));
+                $message->subject = 'Request Forwarded';
+                if($role->roleid === "5") {
+                    $msg = "Your request for recorrection in $coursename module has been forwarded to the lecturer by the instructor.";
+                    $message->fullmessage = $msg;
+                }else{
+                    $msg = "A request for recorrection in $coursename module has been forwarded to the you by the instructor.";
+                    $message->fullmessage = $msg;
+                }
+            }
+        }
+
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $message->fullmessagehtml = '<p>'.$msg.'</p>';
         $message->smallmessage = $msg;
         $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-        $message->contexturl = (new \moodle_url('/mod/workflow/view.php?id='.$cmid))->out(false); // A relevant URL for the notification
-        $message->contexturlname = 'All Sent Requests'; // Link title explaining where users get to for the contexturl
+        $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
+        $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
         $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
         $message->set_additional_content('email', $content);
 
         $messageid = message_send($message);
     }
 
-    public function sendCancel($usertoid,$msg,$cmid){
+    public function sendCreate($usertoid, $msg, $cmid, $requestid){
         global $USER;
 
         $message = new \core\message\message();
@@ -59,21 +119,21 @@ class messageSender{
         $message->name = 'workflow_notification'; // Your notification name from message.php
         $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
         $message->userto = $usertoid;
-        $message->subject = 'Request Cancelled';
+        $message->subject = 'Request Created';
         $message->fullmessage = $msg;
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $message->fullmessagehtml = '<p>'.$msg.'</p>';
         $message->smallmessage = $msg;
         $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-        $message->contexturl = (new \moodle_url('/mod/workflow/view.php?id='.$cmid))->out(false); // A relevant URL for the notification
-        $message->contexturlname = 'All Requests'; // Link title explaining where users get to for the contexturl
+        $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
+        $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
         $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
         $message->set_additional_content('email', $content);
 
         $messageid = message_send($message);
     }
 
-    public function sendForward($usertoid,$msg,$cmid){
+    public function sendBatch($usertoid, $cmid){
         global $USER;
 
         $message = new \core\message\message();
@@ -81,36 +141,14 @@ class messageSender{
         $message->name = 'workflow_notification'; // Your notification name from message.php
         $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
         $message->userto = $usertoid;
-        $message->subject = 'Request Forwarded';
+        $message->subject = 'Request Created';
         $message->fullmessage = $msg;
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $message->fullmessagehtml = '<p>'.$msg.'</p>';
         $message->smallmessage = $msg;
         $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-        $message->contexturl = (new \moodle_url('/mod/workflow/view.php?id='.$cmid))->out(false); // A relevant URL for the notification
-        $message->contexturlname = 'All Requests'; // Link title explaining where users get to for the contexturl
-        $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
-        $message->set_additional_content('email', $content);
-
-        $messageid = message_send($message);
-    }
-
-    public function sendDisapprove($usertoid,$msg,$cmid){
-        global $USER;
-
-        $message = new \core\message\message();
-        $message->component = 'mod_workflow'; // Your plugin's name
-        $message->name = 'workflow_notification'; // Your notification name from message.php
-        $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
-        $message->userto = $usertoid;
-        $message->subject = 'Request Disapproved';
-        $message->fullmessage = $msg;
-        $message->fullmessageformat = FORMAT_MARKDOWN;
-        $message->fullmessagehtml = '<p>'.$msg.'</p>';
-        $message->smallmessage = $msg;
-        $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-        $message->contexturl = (new \moodle_url('/mod/workflow/view.php?id='.$cmid))->out(false); // A relevant URL for the notification
-        $message->contexturlname = 'All Requests'; // Link title explaining where users get to for the contexturl
+//        $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
+//        $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
         $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
         $message->set_additional_content('email', $content);
 

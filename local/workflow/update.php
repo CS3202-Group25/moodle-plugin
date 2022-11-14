@@ -30,34 +30,50 @@ $value = $_GET["value"];
 $requestid = required_param('requestid', PARAM_INT);
 $cmid = required_param('cmid', PARAM_INT);
 
+$request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
 $workflowid = $DB->get_record('workflow_request', array('requestid' => $requestid))->workflowid;
 $lecturerid = $DB->get_record('workflow', array('id'=>$workflowid))->lecturerid;
 $courseid = $DB->get_record('course_modules', array('id'=>$cmid))->course;
+$context = context_course::instance($courseid);
 $coursename = $DB->get_record('course', array('id'=> $courseid))->fullname;
 $studentid = $DB->get_record('workflow_request', array('requestid'=>$requestid))->studentid;
+
 $requestController = new requestController();
 $messagesender = new \mod_workflow\messageSender();
 
 if($value === 'cancelIns') {
-    $messagesender->sendCancel($studentid, "Your request $requestid which was created for $coursename has been canceled by the instructor.", $cmid);
-    $requestController->deleteRequest($requestid);
-    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have successfully deleted the request");
+    $messagesender->send($studentid, $cmid, $requestid, $value);
+//    $requestController->deleteRequest($requestid);
+    $requestController->changeStatus($requestid, 'Cancelled  by Instructor');
+    redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have successfully deleted the request");
 }elseif ($value === 'cancelStudent') {
-    $requestController->deleteRequest($requestid);
-    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have successfully deleted the request");
+//    $requestController->deleteRequest($requestid);
+    $requestController->changeStatus($requestid, 'Cancelled by Student');
+    redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have successfully deleted the request");
 }elseif ($value === 'approve'){
-    $messagesender->sendApprove($studentid, "Your request $requestid which was created for $coursename has been approved by the lecturer.", $cmid);
+    $messagesender->send($studentid, $cmid, $requestid, $value);
+//    if($request->isbatchrequest == 1) {
+//        $studentids = $DB->get_fieldset_select('role_assignments', 'userid', 'contextid = :contextid and roleid=:roleid', [
+//            'contextid' => $context->id,
+//            'roleid' => '5',
+//        ]);
+//        foreach ($studentids as $id) {
+//            if($studentid != $id) {
+//                $messagesender->send($studentid, $cmid, $requestid, $value);
+//            }
+//        }
+//    }
     $requestController->changeStatus($requestid, 'Approved');
     $requestController->changeDeadline($requestid);
-    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
+    redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have approved the request");
 }elseif($value === 'disapprove'){
-    $messagesender->sendDisapprove($studentid, "Your request $requestid which was created for $coursename has been disapproved by the lecturer.", $cmid);
+    $messagesender->send($studentid, $cmid, $requestid, $value);
     $requestController->changeStatus($requestid, 'Disapproved');
-    redirect($CFG->wwwroot . '/mod/workflow/viewallrequests.php', "You have approved the request");
+    redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have approved the request");
 }elseif($value === 'forward'){
-    $messagesender->sendForward($lecturerid, "You received a request $requestid which was created for $coursename from the instructor.", $cmid);
-    $messagesender->sendForward($studentid, "Your request $requestid which was created for $coursename has been forwarded by the instructor to the lecturer.", $cmid);
+    $messagesender->send($studentid, $cmid, $requestid, $value);
+    $messagesender->send($lecturerid, $cmid, $requestid, $value);
     $requestController->changeStatus($requestid, 'Forwarded');
     $requestController->changeReceiver($requestid);
-    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, "You have forwarded the request to lecturer");
+    redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have forwarded the request to lecturer");
 }

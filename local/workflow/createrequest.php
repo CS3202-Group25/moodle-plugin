@@ -23,6 +23,7 @@ require_once(__DIR__ . '/../../config.php');
 //include create_req.php
 require_once($CFG->dirroot . '/mod/workflow/classes/form/createrequest.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/messagesender.php');
 
 $PAGE->set_url(new moodle_url('/mod/workflow/createrequest.php'));
 $PAGE->set_context(\context_system::instance());
@@ -39,6 +40,7 @@ $instructorid = $DB->get_record('workflow', array('id'=> $workflowid))->instruct
 $mform = new createrequest();
 
 $requestController = new requestController();
+$messagesender = new \mod_workflow\messageSender();
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
@@ -92,6 +94,8 @@ if ($mform->is_cancelled()) {
     if ($fromform->req_type == 0) {
         $requestController->createRequestExtend($requestid, $assessmenttype, $assessmentid, $extendtime);
     }
+
+    $messagesender->sendCreate($instructorid, "You created a request of the type of $requesttype.", $cmid, $requestid);
 
     redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted the create request form');
 
