@@ -62,14 +62,17 @@ if($create_capability){
     foreach ($requests as $key => $value) {
         $receiverid = $DB->get_record_sql("SELECT roleid FROM {role_assignments} ra JOIN {workflow_request} lwr ON ra.userid = lwr.receivedby AND lwr.receivedby = :receiver", ['receiver' => $value->receivedby]);
         $receiver = $DB->get_record_sql("SELECT shortname FROM {role} WHERE id = :roleid", ['roleid' => $receiverid->roleid]);
-        
+        $requests[$key]->receivedby = ucfirst($receiver->shortname);
+//        $requests[$key]->requestid = $count;
+//        $count += 1;
+
         if ($receiver->shortname == "teacher") {
             $requests[$key]->receivedby = "Instructor";
-        } 
+        }
         if ($receiver->shortname == "editingteacher") {
             $requests[$key]->receivedby = "Teacher";
-        } 
-        
+        }
+
     }
 
     if(sizeof($requests) != 0) {
@@ -94,7 +97,7 @@ if($create_capability){
                     'btnValue' => 'Create a New Request',
                 ))
         ];
-        echo '<p style="text-align: center;margin-top:25px;">No sent requests</p>';
+        echo '<h3>There is no sent requests</h3>';
 
         echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
     }

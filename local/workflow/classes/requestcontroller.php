@@ -93,8 +93,10 @@ class requestController
         }
     }
 
-    public function changeReceiver($requestid, $lecturerid){
+    public function changeReceiver($requestid){
         global $DB;
+        $workflowid = $DB->get_record('workflow_request', array('requestid' => $requestid))->workflowid;
+        $lecturerid = $DB->get_record('workflow', array('id'=>$workflowid))->lecturerid;
         $sql = 'update {workflow_request} set receivedby = :receivedby where requestid= :requestid';
         $params = [
             'receivedby' => $lecturerid,
@@ -105,6 +107,43 @@ class requestController
             return $DB->execute($sql, $params);
         } catch (dml_exception $e) {
             return false;
+        }
+    }
+
+    public function changeDeadline($requestid){
+        global $DB;
+        $requesttype = $DB->get_record('workflow_request', array('requestid'=>$requestid))->requesttype;
+        if($requesttype=="Extend Deadline") {
+            $requestextend = $DB->get_record('workflow_request_extend', array('requestid' => $requestid));
+            if ($requestextend->assessmenttype == "Quiz") {
+                $quizid = $requestextend->assessmentid;
+                $newtime = $requestextend->extendtime;
+                $sql = 'update {quiz} set timeclose = :newtime where id= :quizid';
+                $params = [
+                    'newtime' => $newtime,
+                    'quizid' => $quizid,
+                ];
+
+                try {
+                    return $DB->execute($sql, $params);
+                } catch (dml_exception $e) {
+                    return false;
+                }
+            } elseif ($requestextend->assessmenttype == "Assignment") {
+                $assignid = $requestextend->assessmentid;
+                $newdate = $requestextend->extendtime;
+                $sql = 'update {assign} set duedate = :newdate where id= :assignid';
+                $params = [
+                    'newdate' => $newdate,
+                    'assignid' => $assignid,
+                ];
+
+                try {
+                    return $DB->execute($sql, $params);
+                } catch (dml_exception $e) {
+                    return false;
+                }
+            }
         }
     }
 
