@@ -62,8 +62,14 @@ if($create_capability){
     foreach ($requests as $key => $value) {
         $receiverid = $DB->get_record_sql("SELECT roleid FROM {role_assignments} ra JOIN {workflow_request} lwr ON ra.userid = lwr.receivedby AND lwr.receivedby = :receiver", ['receiver' => $value->receivedby]);
         $receiver = $DB->get_record_sql("SELECT shortname FROM {role} WHERE id = :roleid", ['roleid' => $receiverid->roleid]);
-
-        $requests[$key]->receivedby = ucfirst($receiver->shortname);
+        
+        if ($receiver->shortname == "teacher") {
+            $requests[$key]->receivedby = "Instructor";
+        } 
+        if ($receiver->shortname == "editingteacher") {
+            $requests[$key]->receivedby = "Teacher";
+        } 
+        
     }
 
     if(sizeof($requests) != 0) {
