@@ -59,13 +59,20 @@ if($create_capability){
     $requests = $DB->get_records_sql($sql, ['studentid' => $USER->id, 'workflowid' => $workflow->id]);
 
     $receivers = array();
-//    $count = 1;
     foreach ($requests as $key => $value) {
         $receiverid = $DB->get_record_sql("SELECT roleid FROM {role_assignments} ra JOIN {workflow_request} lwr ON ra.userid = lwr.receivedby AND lwr.receivedby = :receiver", ['receiver' => $value->receivedby]);
         $receiver = $DB->get_record_sql("SELECT shortname FROM {role} WHERE id = :roleid", ['roleid' => $receiverid->roleid]);
         $requests[$key]->receivedby = ucfirst($receiver->shortname);
 //        $requests[$key]->requestid = $count;
 //        $count += 1;
+
+        if ($receiver->shortname == "teacher") {
+            $requests[$key]->receivedby = "Instructor";
+        }
+        if ($receiver->shortname == "editingteacher") {
+            $requests[$key]->receivedby = "Teacher";
+        }
+
     }
 
     if(sizeof($requests) != 0) {
@@ -101,12 +108,6 @@ elseif($forward_capability){
     $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'Pending'";
     $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflow->id]);
 
-//    $count = 1;
-//    foreach ($requests as $key => $value) {
-//        $requests[$key]->requestid = $count;
-//        $count += 1;
-//    }
-
     if(sizeof($requests) != 0) {
         $templatecontent_table = (object)[
             'requests' => array_values($requests),
@@ -116,7 +117,7 @@ elseif($forward_capability){
 
         echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
     }else{
-        echo '<h3>There is no received requests</h3>';
+        echo '<p style="text-align: center;margin-top:25px;">No received requests</p>';
     }
 }
 elseif($approve_capability){
@@ -124,12 +125,6 @@ elseif($approve_capability){
 
     $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :lecturerid AND workflowid = :workflowid AND state = 'Forwarded'";
     $requests = $DB->get_records_sql($sql, ['lecturerid' => $USER->id, 'workflowid' => $workflow->id]);
-
-//    $count = 1;
-//    foreach ($requests as $key => $value) {
-//        $requests[$key]->requestid = $count;
-//        $count += 1;
-//    }
 
     if(sizeof($requests) != 0) {
         $templatecontent_table = (object)[
@@ -140,7 +135,7 @@ elseif($approve_capability){
 
         echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
     }else {
-        echo '<h3>There is no received requests</h3>';
+        echo '<p style="text-align: center;margin-top:25px;">No received requests</p>';
     }
 }
 
