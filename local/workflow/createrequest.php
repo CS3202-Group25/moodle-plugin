@@ -78,6 +78,7 @@ if ($mform->is_cancelled()) {
     } else {
         $filesid = NULL;
     }
+
     $time = new DateTime("now", core_date::get_user_timezone_object());
     $sentdate = $time->getTimestamp();
 

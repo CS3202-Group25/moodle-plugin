@@ -28,3 +28,5 @@ $string['pluginname'] = 'Workflow Plugin';
 $string['modulenameplural'] = 'Workflows';
 $string['modulename'] = 'Workflow';
 
+$string['messageprovider:mynotification'] = 'Worklow Notification';
+

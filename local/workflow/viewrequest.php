@@ -38,10 +38,10 @@ $dbController = new dbController();
 $requestid = required_param('requestid', PARAM_INT);
 $cmid = required_param('cmid', PARAM_INT);
 
-$request = $requestController->getRequest($requestid);
-$sender = $dbController->getUsersById($request->studentid);
+$request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
+$sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
-$role = $dbController->getRoleById($USER->id);
+$role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
 //$picture = $DB->get_record('files', array('id'=>69));
 
 if($role->roleid === "4"){
@@ -51,7 +51,7 @@ if($role->roleid === "4"){
             'btnValue' => 'Forward',
     ),
         array(
-            'btnId' => 'cancel',
+            'btnId' => 'cancelIns',
             'btnValue' => 'Cancel',
     ));
 }elseif($role->roleid === "3"){
@@ -67,7 +67,7 @@ if($role->roleid === "4"){
 }else{
     $buttons = array(
         array(
-            'btnId' => 'cancel',
+            'btnId' => 'cancelStudent',
             'btnValue' => 'Cancel',
         ));
 }
@@ -78,20 +78,37 @@ $templateContent = (object) [
     'title' => 'View a Request',
 ];
 
-$viewRequestContent = (object) [
-
-//    'profilePic' => $picture->contenthash,
-    'date' => $sentdate,
-    'name' => "{$sender->firstname} {$sender->lastname}",
-    'description' => $request->reason,
-    'buttons' => $buttons,
-    'requestId' => $requestid,
-    'cmid'=> $cmid
-
-];
-
 echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
 
-echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
+if($request->requesttype == "Extend Deadline"){
+    $requestextend = $DB->get_record('workflow_request_extend', array('requestid'=>$requestid));
+    if ($requestextend->assessmenttype == "Quiz") {
+        $assessment = $DB->get_record('quiz', array('id'=>$requestextend->assessmentid))->name;
+        $extendtime = $requestextend->extendtime;
+
+    } elseif ($requestextend->assessmenttype == "Assignment") {
+        $assessment = $DB->get_record('assign', array('id'=>$requestextend->assessmentid))->name;
+        $extendtime = $requestextend->extendtime;
+    }
+
+    $viewRequestContent = (object) [
+        'date' => $sentdate,
+        'name' => "{$sender->firstname} {$sender->lastname}",
+        'studentid' =>$sender->id,
+        'requesttype' => $requestextend->assessmenttype,
+        'assessment' => $assessment,
+        'extendtime' => userdate($extendtime),
+        'description' => $request->reason,
+        'buttons' => $buttons,
+        'requestId' => $requestid,
+        'cmid'=> $cmid
+    ];
+
+    echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
+}
+
+
+
+
 
 echo $OUTPUT->footer();
