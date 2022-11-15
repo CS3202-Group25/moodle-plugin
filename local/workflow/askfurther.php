@@ -22,6 +22,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot."/mod/workflow/classes/form/askfurther.php");
+require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 global $DB;
 
@@ -51,9 +52,8 @@ echo $OUTPUT->render_from_template("mod_workflow/ask_further",$templatecontext);
 
 if($form1->is_cancelled()){
     redirect($CFG->wwwroot.'/my',"You cancelled asking for details!");
-}else{
-    $DB->execute("UPDATE {workflow_request} SET commentlecturer=".$USER->id.", state='DataWait', askedmoredetails=1 WHERE requestid=".intval($_GET["requestid"]));
-    redirect($CFG->wwwroot.'/mod/workflow/viewallrequests.php',"Operation is successful!");
+}else if($formdata=$form1->get_data()){
+    $requestController->changeStatus($requestId,"Awaiting details");
 }
 
 $form1->display();
