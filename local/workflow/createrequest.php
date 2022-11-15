@@ -95,7 +95,7 @@ if ($mform->is_cancelled()) {
         $requestController->createRequestExtend($requestid, $assessmenttype, $assessmentid, $extendtime);
     }
 
-    $messagesender->sendCreate($instructorid, "You created a request of the type of $requesttype.", $cmid, $requestid);
+    $messagesender->sendCreate($instructorid, "You received a request of the type of $requesttype.", $cmid, $requestid);
 
     redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted the create request form');
 

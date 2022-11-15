@@ -18,7 +18,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-global $DB, $CFG, $USER;
+global $DB, $CFG, $USER, $PAGE;
 
 require_once (__DIR__ . '/../../config.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
@@ -34,45 +34,35 @@ $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
 $workflowid = $DB->get_record('workflow_request', array('requestid' => $requestid))->workflowid;
 $lecturerid = $DB->get_record('workflow', array('id'=>$workflowid))->lecturerid;
 $courseid = $DB->get_record('course_modules', array('id'=>$cmid))->course;
-$context = context_course::instance($courseid);
 $coursename = $DB->get_record('course', array('id'=> $courseid))->fullname;
 $studentid = $DB->get_record('workflow_request', array('requestid'=>$requestid))->studentid;
+
+$PAGE->set_context(\context_course::instance($courseid));
+$contextid = $PAGE->context->id;
 
 $requestController = new requestController();
 $messagesender = new \mod_workflow\messageSender();
 
 if($value === 'cancelIns') {
-    $messagesender->send($studentid, $cmid, $requestid, $value);
+    $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
 //    $requestController->deleteRequest($requestid);
     $requestController->changeStatus($requestid, 'Cancelled  by Instructor');
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have successfully deleted the request");
 }elseif ($value === 'cancelStudent') {
-//    $requestController->deleteRequest($requestid);
-    $requestController->changeStatus($requestid, 'Cancelled by Student');
+    $requestController->deleteRequest($requestid);
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have successfully deleted the request");
 }elseif ($value === 'approve'){
-    $messagesender->send($studentid, $cmid, $requestid, $value);
-//    if($request->isbatchrequest == 1) {
-//        $studentids = $DB->get_fieldset_select('role_assignments', 'userid', 'contextid = :contextid and roleid=:roleid', [
-//            'contextid' => $context->id,
-//            'roleid' => '5',
-//        ]);
-//        foreach ($studentids as $id) {
-//            if($studentid != $id) {
-//                $messagesender->send($studentid, $cmid, $requestid, $value);
-//            }
-//        }
-//    }
+    $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
     $requestController->changeStatus($requestid, 'Approved');
     $requestController->changeDeadline($requestid);
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have approved the request");
 }elseif($value === 'disapprove'){
-    $messagesender->send($studentid, $cmid, $requestid, $value);
+    $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
     $requestController->changeStatus($requestid, 'Disapproved');
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have approved the request");
 }elseif($value === 'forward'){
-    $messagesender->send($studentid, $cmid, $requestid, $value);
-    $messagesender->send($lecturerid, $cmid, $requestid, $value);
+    $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
+    $messagesender->send($lecturerid, $cmid, $requestid, $value, $contextid);
     $requestController->changeStatus($requestid, 'Forwarded');
     $requestController->changeReceiver($requestid);
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have forwarded the request to lecturer");

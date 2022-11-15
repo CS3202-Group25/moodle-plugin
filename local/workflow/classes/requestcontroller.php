@@ -114,7 +114,7 @@ class requestController
         global $DB;
         $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
         $requesttype = $request->requesttype;
-        $isbatchrequest = $requesttype->isbatchrequest;
+        $isbatchrequest = $request->isbatchrequest;
         $studentid = $request->studentid;
         if($requesttype=="Extend Deadline") {
             $requestextend = $DB->get_record('workflow_request_extend', array('requestid' => $requestid));
@@ -171,7 +171,6 @@ class requestController
                     $recordToInsert->userid = $studentid;
                     $recordToInsert->allowsubmissionsfromdate = $assign->allowsubmissionsfromdate;
                     $recordToInsert->duedate = $newdate;
-                    $recordToInsert->cutoffdate = $assign->cutoffdate;
 
                     try {
                         return $DB->insert_record('assign_overrides', $recordToInsert, false);
