@@ -39,6 +39,7 @@ $requestid = required_param('requestid', PARAM_INT);
 $cmid = required_param('cmid', PARAM_INT);
 
 $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
+$state = $request->state;
 $sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
 $role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
@@ -83,6 +84,12 @@ echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateCon
 
 if($request->requesttype == "Extend Deadline"){
     $requestextend = $DB->get_record('workflow_request_extend', array('requestid'=>$requestid));
+    if($request->isbatchrequest == 1){
+        $isbatchrequest = 'Yes';
+    }elseif($request->isbatchrequest == 0){
+        $isbatchrequest = 'No';
+    }
+
     if ($requestextend->assessmenttype == "Quiz") {
         $assessment = $DB->get_record('quiz', array('id'=>$requestextend->assessmentid))->name;
         $extendtime = $requestextend->extendtime;
@@ -97,10 +104,12 @@ if($request->requesttype == "Extend Deadline"){
         'name' => "{$sender->firstname} {$sender->lastname}",
         'studentid' =>$sender->id,
         'requesttype' => $request->requesttype,
+        'isbatchrequest' => $isbatchrequest,
         'assessmenttype' => $requestextend->assessmenttype,
         'assessment' => $assessment,
         'extendtime' => userdate($extendtime),
         'description' => $request->reason,
+        'state' => $state,
         'buttons' => $buttons,
         'requestId' => $requestid,
         'cmid'=> $cmid,
@@ -115,12 +124,12 @@ if($request->requesttype == "Extend Deadline"){
         'studentid' =>$sender->id,
         'requesttype' => $request->requesttype,
         'description' => $request->reason,
+        'state' => $state,
         'buttons' => $buttons,
         'requestId' => $requestid,
         'cmid'=> $cmid,
         'isassessment' => false
     ];
-
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 }
 

@@ -42,16 +42,18 @@
     </div>
 </div>
 
-<p class="lh-base">Student Index Number : {{studentid}}</p>
-<p class="lh-base">Request Type : {{requesttype}}</p>
+<p class="lh-base"><b>Student Index Number : </b>{{studentid}}</p>
+<p class="lh-base"><b>Request Type : </b>{{requesttype}}</p>
 
 {{#isassessment}}
-    <p class="lh-base">Assessment Type : {{assessmenttype}}</p>
-    <p class="lh-base">Assessment Name : {{assessment}}</p>
-    <p class="lh-base">Required Extend Time : {{extendtime}}</p>
+    <p class="lh-base"><b>Is this an extension for whole batch : </b>{{isbatchrequest}}</p>
+    <p class="lh-base"><b>Assessment Type : </b>{{assessmenttype}}</p>
+    <p class="lh-base"><b>Assessment Name : </b>{{assessment}}</p>
+    <p class="lh-base"><b>Required Extend Time : </b>{{extendtime}}</p>
 {{/isassessment}}
 
-<p class="lh-base">Reason : {{description}}</p>
+<p class="lh-base"><b>Reason : </b>{{description}}</p>
+<p class="lh-base"><b>State : </b>{{state}}</p>
 
 {{#buttons}}
     <a href="/mod/workflow/update.php?requestid={{requestId}}&value={{btnId}}&cmid={{cmid}}", class="btn btn-primary">{{btnValue}}</a>
