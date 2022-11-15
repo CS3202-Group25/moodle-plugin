@@ -52,15 +52,15 @@ if ($sender->picture != 0) {
 }
 
 // $files = $DB->get_records('files', array('itemid' => $request->filesid));
-$sql = "SELECT * FROM {files} WHERE itemid = :itemid AND filesize != 0";
-$files = $DB->get_records_sql($sql, ['itemid' => $request->filesid]);
+// $sql = "SELECT * FROM {files} WHERE itemid = :itemid AND filesize != 0";
+// $files = $DB->get_records_sql($sql, ['itemid' => $request->filesid]);
 
 
-$filesurl = [];
-foreach ($files as $key => $value) {
-    $url = moodle_url::make_pluginfile_url($value->contextid, $value->component, $value->filearea, $value->itemid, $value->filepath, $value->filename, false);
-    array_push($filesurl, $url);
-}
+// $filesurl = [];
+// foreach ($files as $key => $value) {
+//     $url = moodle_url::make_pluginfile_url($value->contextid, $value->component, $value->filearea, $value->itemid, $value->filepath, $value->filename, false);
+//     array_push($filesurl, $url);
+// }
 
 
 
@@ -109,8 +109,7 @@ $viewRequestContent = (object) [
     'buttons' => $buttons,
     'requestId' => $requestid,
     'cmid'=> $cmid,
-    'photourl' => $photourl,
-    'filesurl' => array_values($filesurl)
+    'photourl' => $photourl
 ];
 
 echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
@@ -146,7 +145,9 @@ if($request->requesttype == "Extend Deadline"){
         'buttons' => $buttons,
         'requestId' => $requestid,
         'cmid'=> $cmid,
-        'isassessment' => true
+        'isassessment' => true,
+        'photourl' => $photourl
+
     ];
 
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
@@ -161,7 +162,8 @@ if($request->requesttype == "Extend Deadline"){
         'buttons' => $buttons,
         'requestId' => $requestid,
         'cmid'=> $cmid,
-        'isassessment' => false
+        'isassessment' => false,
+        'photourl' => $photourl
     ];
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 }
