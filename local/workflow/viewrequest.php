@@ -74,6 +74,15 @@ if($role->roleid === "4"){
             'btnId' => 'cancelIns',
             'btnValue' => 'Cancel',
     ));
+    if($request->state == "Pending"){
+        $altbuttons = array(
+            array(
+                'btnId' => 'askFurther',
+                'linkText' => 'askfurther.php',
+                'btnValue' => 'Ask Further Details',
+            )
+        );
+    }
 }elseif($role->roleid === "3"){
     $buttons = array(
         array(
@@ -91,6 +100,20 @@ if($role->roleid === "4"){
                 'btnId' => 'cancelStudent',
                 'btnValue' => 'Cancel',
             ));
+    }elseif($request->state == "Awaiting details"){
+        $buttons = array(
+            array(
+                'btnId' => 'cancelStudent',
+                'btnValue' => 'Cancel',
+            )
+        );
+        $altbuttons = array(
+            array(
+                'btnId' => 'sendfurther',
+                'linkText' => 'providefurther.php',
+                'btnValue' => 'Send further details',
+            )
+        );
     }
 }
 
@@ -107,6 +130,7 @@ $viewRequestContent = (object) [
     'name' => "{$sender->firstname} {$sender->lastname}",
     'description' => $request->reason,
     'buttons' => $buttons,
+    'altbuttons' => $altbuttons,
     'requestId' => $requestid,
     'cmid'=> $cmid,
     'photourl' => $photourl
