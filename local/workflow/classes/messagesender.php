@@ -29,16 +29,19 @@ use dml_exception;
 
 class messageSender{
 
-    public function send($usertoid, $cmid, $requestid, $value){
-        global $USER, $DB;
+    public function send($usertoid, $cmid, $requestid, $value, $contextid){
+        global $USER, $DB, $PAGE;
 
         $message = new \core\message\message();
         $message->component = 'mod_workflow'; // Your plugin's name
         $message->name = 'workflow_notification'; // Your notification name from message.php
         $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
         $message->userto = $usertoid;
+        $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
+        $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
 
         $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
+        $studentid = $request->studentid;
         $courseid = $DB->get_record('course_modules', array('id'=>$cmid))->course;
         $coursename = $DB->get_record('course', array('id'=> $courseid))->fullname;
         if($request->requesttype == "Extend Deadline"){
@@ -51,9 +54,58 @@ class messageSender{
             }
 
             if($value == "approve"){
-                $message->subject = 'Request Approved';
-                $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been approved by the lecturer. The new deadline has been updated in the moodle";
-                $message->fullmessage = $msg;
+                if($request->isbatchrequest == 1) {
+                    $studentids = $DB->get_fieldset_select('role_assignments', 'userid', 'contextid = :contextid and roleid=:roleid', [
+                        'contextid' => $contextid,
+                        'roleid' => '5',
+                    ]);
+                    foreach ($studentids as $id) {
+                        if($studentid === $id) {
+                            $message = new \core\message\message();
+                            $message->component = 'mod_workflow'; // Your plugin's name
+                            $message->name = 'workflow_notification'; // Your notification name from message.php
+                            $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
+                            $message->userto = $id;
+                            $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
+                            $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
+                            $message->subject = 'Request Approved';
+                            $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been approved by the lecturer. The new deadline has been updated in the moodle";
+                            $message->fullmessage = $msg;
+                            $message->fullmessageformat = FORMAT_MARKDOWN;
+                            $message->fullmessagehtml = '<p>'.$msg.'</p>';
+                            $message->smallmessage = $msg;
+                            $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
+                            $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
+                            $message->set_additional_content('email', $content);
+
+                            $messageid = message_send($message);
+                        }else{
+                            $message = new \core\message\message();
+                            $message->component = 'mod_workflow'; // Your plugin's name
+                            $message->name = 'workflow_notification'; // Your notification name from message.php
+                            $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
+                            $message->userto = $id;
+                            $message->subject = 'Deadline Extended';
+                            $msg = "The deadline of $requestextend->assessmenttype, $assessment in $coursename module has been extended by the lecturer. The new deadline has been updated in the moodle";
+                            $message->fullmessage = $msg;
+                            $message->contexturl = '';
+                            $message->contexturlname = ''; // Link title explaining where users get to for the contexturl
+                            $message->fullmessage = $msg;
+                            $message->fullmessageformat = FORMAT_MARKDOWN;
+                            $message->fullmessagehtml = '<p>'.$msg.'</p>';
+                            $message->smallmessage = $msg;
+                            $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
+                            $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
+                            $message->set_additional_content('email', $content);
+
+                            $messageid = message_send($message);
+                        }
+                    }
+                }elseif($request->isbatchrequest == 0) {
+                    $message->subject = 'Request Approved';
+                    $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been approved by the lecturer. The new deadline has been updated in the moodle";
+                    $message->fullmessage = $msg;
+                }
             }elseif ($value == "disapprove"){
                 $message->subject = 'Request Disapproved';
                 $msg = "Your request for extending deadline of $requestextend->assessmenttype, $assessment in $coursename module has been disapproved by the lecturer.";
@@ -76,7 +128,7 @@ class messageSender{
         }else{
             if($value == "approve"){
                 $message->subject = 'Request Approved';
-                $msg = "Your request for recorrection in $coursename module has been approved by the lecturer. The new deadline has been updated in the moodle";
+                $msg = "Your request for recorrection in $coursename module has been approved by the lecturer.";
                 $message->fullmessage = $msg;
             }elseif ($value == "disapprove"){
                 $message->subject = 'Request Disapproved';
@@ -103,12 +155,18 @@ class messageSender{
         $message->fullmessagehtml = '<p>'.$msg.'</p>';
         $message->smallmessage = $msg;
         $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-        $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
-        $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
         $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
         $message->set_additional_content('email', $content);
 
-        $messageid = message_send($message);
+        if($request->isbatchrequest == 0) {
+            $messageid = message_send($message);
+        }elseif($value == 'forward'){
+            $messageid = message_send($message);
+        }elseif($value == 'cancelIns'){
+            $messageid = message_send($message);
+        }elseif($value == 'disapprove'){
+            $messageid = message_send($message);
+        }
     }
 
     public function sendCreate($usertoid, $msg, $cmid, $requestid){
@@ -127,28 +185,6 @@ class messageSender{
         $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
         $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
         $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
-        $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
-        $message->set_additional_content('email', $content);
-
-        $messageid = message_send($message);
-    }
-
-    public function sendBatch($usertoid, $cmid){
-        global $USER;
-
-        $message = new \core\message\message();
-        $message->component = 'mod_workflow'; // Your plugin's name
-        $message->name = 'workflow_notification'; // Your notification name from message.php
-        $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
-        $message->userto = $usertoid;
-        $message->subject = 'Request Created';
-        $message->fullmessage = $msg;
-        $message->fullmessageformat = FORMAT_MARKDOWN;
-        $message->fullmessagehtml = '<p>'.$msg.'</p>';
-        $message->smallmessage = $msg;
-        $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
-//        $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
-//        $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
         $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
         $message->set_additional_content('email', $content);
 
