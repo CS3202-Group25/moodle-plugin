@@ -44,6 +44,26 @@ $sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
 $role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
 
+if ($sender->picture != 0) {
+    $file = $DB->get_record('files', array('id'=>$sender->picture));
+    $photourl = moodle_url::make_pluginfile_url($file->contextid, $file->component, $file->filearea, $file->itemid, $file->filepath, $file->filename, false);   
+}else{
+    $photourl = new moodle_url('/theme/image.php/boost/core/1668406882/u/f2');
+}
+
+// $files = $DB->get_records('files', array('itemid' => $request->filesid));
+$sql = "SELECT * FROM {files} WHERE itemid = :itemid AND filesize != 0";
+$files = $DB->get_records_sql($sql, ['itemid' => $request->filesid]);
+
+
+$filesurl = [];
+foreach ($files as $key => $value) {
+    $url = moodle_url::make_pluginfile_url($value->contextid, $value->component, $value->filearea, $value->itemid, $value->filepath, $value->filename, false);
+    array_push($filesurl, $url);
+}
+
+
+
 if($role->roleid === "4"){
     $buttons = array(
         array(
@@ -78,6 +98,19 @@ echo $OUTPUT->header();
 
 $templateContent = (object) [
     'title' => 'View a Request',
+];
+
+$viewRequestContent = (object) [
+
+//    'profilePic' => $picture->contenthash,
+    'date' => $sentdate,
+    'name' => "{$sender->firstname} {$sender->lastname}",
+    'description' => $request->reason,
+    'buttons' => $buttons,
+    'requestId' => $requestid,
+    'cmid'=> $cmid,
+    'photourl' => $photourl,
+    'filesurl' => array_values($filesurl)
 ];
 
 echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
