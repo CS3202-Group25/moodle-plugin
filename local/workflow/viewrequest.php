@@ -38,11 +38,11 @@ $dbController = new dbController();
 $requestid = required_param('requestid', PARAM_INT);
 $cmid = required_param('cmid', PARAM_INT);
 
-$request = $requestController->getRequest($requestid);
-$sender = $dbController->getUsersById($request->studentid);
+$request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
+$state = $request->state;
+$sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
-$role = $dbController->getRoleById($USER->id);
-//$picture = $DB->get_record('files', array('id'=>69));
+$role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
 
 if ($sender->picture != 0) {
     $file = $DB->get_record('files', array('id'=>$sender->picture));
@@ -71,7 +71,7 @@ if($role->roleid === "4"){
             'btnValue' => 'Forward',
     ),
         array(
-            'btnId' => 'cancel',
+            'btnId' => 'cancelIns',
             'btnValue' => 'Cancel',
     ));
 }elseif($role->roleid === "3"){
@@ -85,11 +85,13 @@ if($role->roleid === "4"){
             'btnValue' => 'Disapprove',
         ));
 }else{
-    $buttons = array(
-        array(
-            'btnId' => 'cancel',
-            'btnValue' => 'Cancel',
-        ));
+    if($request->state == "Pending") {
+        $buttons = array(
+            array(
+                'btnId' => 'cancelStudent',
+                'btnValue' => 'Cancel',
+            ));
+    }
 }
 
 echo $OUTPUT->header();
@@ -113,6 +115,55 @@ $viewRequestContent = (object) [
 
 echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
 
-echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
+if($request->requesttype == "Extend Deadline"){
+    $requestextend = $DB->get_record('workflow_request_extend', array('requestid'=>$requestid));
+    if($request->isbatchrequest == 1){
+        $isbatchrequest = 'Yes';
+    }elseif($request->isbatchrequest == 0){
+        $isbatchrequest = 'No';
+    }
+
+    if ($requestextend->assessmenttype == "Quiz") {
+        $assessment = $DB->get_record('quiz', array('id'=>$requestextend->assessmentid))->name;
+        $extendtime = $requestextend->extendtime;
+
+    } elseif ($requestextend->assessmenttype == "Assignment") {
+        $assessment = $DB->get_record('assign', array('id'=>$requestextend->assessmentid))->name;
+        $extendtime = $requestextend->extendtime;
+    }
+
+    $viewRequestContent = (object) [
+        'date' => $sentdate,
+        'name' => "{$sender->firstname} {$sender->lastname}",
+        'studentid' =>$sender->id,
+        'requesttype' => $request->requesttype,
+        'isbatchrequest' => $isbatchrequest,
+        'assessmenttype' => $requestextend->assessmenttype,
+        'assessment' => $assessment,
+        'extendtime' => userdate($extendtime),
+        'description' => $request->reason,
+        'state' => $state,
+        'buttons' => $buttons,
+        'requestId' => $requestid,
+        'cmid'=> $cmid,
+        'isassessment' => true
+    ];
+
+    echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
+}else{
+    $viewRequestContent = (object) [
+        'date' => $sentdate,
+        'name' => "{$sender->firstname} {$sender->lastname}",
+        'studentid' =>$sender->id,
+        'requesttype' => $request->requesttype,
+        'description' => $request->reason,
+        'state' => $state,
+        'buttons' => $buttons,
+        'requestId' => $requestid,
+        'cmid'=> $cmid,
+        'isassessment' => false
+    ];
+    echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
+}
 
 echo $OUTPUT->footer();
