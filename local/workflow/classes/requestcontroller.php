@@ -93,6 +93,26 @@ class requestController
         }
     }
 
+    public function confirmInquiry($requestid){
+        global $DB;
+        $sqlquery="update mdl_workflow_request set askedmoredetails=1 where requestid=".$requestid;
+        try {
+            return $DB->execute($sqlquery);
+        } catch(dml_exception $e) {
+            return false;
+        }
+    }
+
+    public function updateDetails($requestid,$details,$files){
+        global $DB;
+        $sqlquery = "update mdl_workflow_request set reason='$details', filesid='$files' where requestid='$requestid'";
+        try {
+            return $DB->execute($sqlquery);
+        } catch(dml_exception $e) {
+            return false;
+        }
+    }
+
     public function changeReceiver($requestid){
         global $DB;
         $workflowid = $DB->get_record('workflow_request', array('requestid' => $requestid))->workflowid;

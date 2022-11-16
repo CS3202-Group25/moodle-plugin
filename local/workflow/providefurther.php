@@ -22,6 +22,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot."/mod/workflow/classes/form/providefurther.php");
+require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 global $DB;
 
@@ -41,6 +42,8 @@ if ($user_role != '5') {
 
 $form1=new provideFurther();
 
+$requestController = new requestController();
+
 echo $OUTPUT->header();
 
 $templatecontext=(object)[
@@ -51,8 +54,12 @@ echo $OUTPUT->render_from_template("mod_workflow/provide_further",$templateconte
 
 if($form1->is_cancelled()){
     redirect($CFG->wwwroot.'/my',"You cancelled sending details!");
-}else{
-    $DB->execute("UPDATE {workflow_request} SET commentlecturer=".$USER->id." WHERE requestid=".$requestId);
+}else if($formdata=$form1->get_data()){
+    $reqID=$formdata->reqID;
+    $details=$formdata->details;
+    $files=$formdata->files;
+    $requestController->updateDetails($reqID,$details,$files);
+    redirect($CFG->wwwroot.'/my',"Required details sent!");
 }
 
 $form1->display();
