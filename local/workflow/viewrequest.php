@@ -105,18 +105,18 @@ $templateContent = (object) [
     'title' => 'View a Request',
 ];
 
-$viewRequestContent = (object) [
-
-//    'profilePic' => $picture->contenthash,
-    'date' => $sentdate,
-    'name' => "{$sender->firstname} {$sender->lastname}",
-    'description' => $request->reason,
-    'buttons' => $buttons,
-    'altbuttons' => $altbuttons,
-    'requestId' => $requestid,
-    'cmid'=> $cmid,
-    'photourl' => $photourl
-];
+//$viewRequestContent = (object) [
+//
+////    'profilePic' => $picture->contenthash,
+//    'date' => $sentdate,
+//    'name' => "{$sender->firstname} {$sender->lastname}",
+//    'description' => $request->reason,
+//    'buttons' => $buttons,
+//    'altbuttons' => $altbuttons,
+//    'requestId' => $requestid,
+//    'cmid'=> $cmid,
+//    'photourl' => $photourl
+//];
 
 echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
 
