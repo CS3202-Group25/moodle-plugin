@@ -23,10 +23,12 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot."/mod/workflow/classes/form/askfurther.php");
 require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/messagesender.php');
 
-global $DB;
+global $DB,$USER;
 
 $requestId=$_GET["requestId"];
+define('REQID',$_GET["requestId"]);
 
 $PAGE->set_url(new moodle_url('/mod/workflow/askfurther.php'));
 $PAGE->set_context(\context_system::instance());
@@ -42,6 +44,9 @@ if ($user_role != '4') {
 
 $form1=new askFurther();
 
+$requestController = new requestController();
+$messagesender = new \mod_workflow\messageSender();
+
 echo $OUTPUT->header();
 
 $templatecontext=(object)[
@@ -53,7 +58,25 @@ echo $OUTPUT->render_from_template("mod_workflow/ask_further",$templatecontext);
 if($form1->is_cancelled()){
     redirect($CFG->wwwroot.'/my',"You cancelled asking for details!");
 }else if($formdata=$form1->get_data()){
-    $requestController->changeStatus($requestId,"Awaiting details");
+    $reqID=$formdata->reqID;
+    $requestController->confirmInquiry($reqID);
+    $message = new \core\message\message();
+    $message->component = "mod_workflow";
+    $message->name = "workflow_notification";
+    $message->userfrom = $USER;
+    $receiver = $DB->get_record_sql("SELECT * FROM mdl_workflow_request WHERE requestid=".$reqID)->studentid;
+    $message->userto = $receiver;
+    $message->subject = "Further details required!";
+    $message->fullmessagehtml = "<p>Following additional details regarding request '$reqID' are required.</p><br><br><p>'$details'</p>";
+    $message->fullmessageformat = FORMAT_MARKDOWN;
+    $message->smallmessage = "Details";
+    $message->notification = 1;
+    $message->contexturl = (new \moodle_url("/mod/workflow/view.php?id=2"))->out(false); 
+    $message->contexturlname = 'View workflow requests';
+    $content = array('*' => array('header' => ' test ', 'footer' => ' test '));
+    $message->set_additional_content('email', $content);
+    $messageID = message_send($message);
+    redirect($CFG->wwwroot.'/my',"Inquiry sent!");
 }
 
 $form1->display();

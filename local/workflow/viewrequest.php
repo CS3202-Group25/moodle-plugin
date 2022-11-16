@@ -63,7 +63,7 @@ if ($sender->picture != 0) {
 // }
 
 
-
+$altbuttons=array();
 if($role->roleid === "4"){
     $buttons = array(
         array(
@@ -74,14 +74,8 @@ if($role->roleid === "4"){
             'btnId' => 'cancelIns',
             'btnValue' => 'Cancel',
     ));
-    if($request->state == "Pending"){
-        $altbuttons = array(
-            array(
-                'btnId' => 'askFurther',
-                'linkText' => 'askfurther.php',
-                'btnValue' => 'Ask Further Details',
-            )
-        );
+    if($request->askedmoredetails == 0){
+        $altbuttons = array(array('btnId' => 'askFurther','linkText' => 'askfurther.php','btnValue' => 'Ask Further Details'));
     }
 }elseif($role->roleid === "3"){
     $buttons = array(
@@ -100,20 +94,8 @@ if($role->roleid === "4"){
                 'btnId' => 'cancelStudent',
                 'btnValue' => 'Cancel',
             ));
-    }elseif($request->state == "Awaiting details"){
-        $buttons = array(
-            array(
-                'btnId' => 'cancelStudent',
-                'btnValue' => 'Cancel',
-            )
-        );
-        $altbuttons = array(
-            array(
-                'btnId' => 'sendfurther',
-                'linkText' => 'providefurther.php',
-                'btnValue' => 'Send further details',
-            )
-        );
+    }if($request->askedmoredetails == 1){
+        $altbuttons = array(array('btnId' => 'sendfurther','linkText' => 'providefurther.php','btnValue' => 'Send further details'));
     }
 }
 
@@ -167,6 +149,7 @@ if($request->requesttype == "Extend Deadline"){
         'description' => $request->reason,
         'state' => $state,
         'buttons' => $buttons,
+        'altbuttons' => $altbuttons,
         'requestId' => $requestid,
         'cmid'=> $cmid,
         'isassessment' => true,
@@ -184,6 +167,7 @@ if($request->requesttype == "Extend Deadline"){
         'description' => $request->reason,
         'state' => $state,
         'buttons' => $buttons,
+        'altbuttons' => $altbuttons,
         'requestId' => $requestid,
         'cmid'=> $cmid,
         'isassessment' => false,
