@@ -27,8 +27,7 @@ require_once ($CFG->dirroot . '/mod/workflow/classes/messagesender.php');
 
 global $DB,$USER;
 
-$requestId=$_GET["requestId"];
-define('REQID',$_GET["requestId"]);
+$requestId=$_GET["requestid"];
 
 $PAGE->set_url(new moodle_url('/mod/workflow/askfurther.php'));
 $PAGE->set_context(\context_system::instance());
@@ -43,6 +42,7 @@ if ($user_role != '4') {
 }
 
 $form1=new askFurther();
+$form1->setReqID($requestId);
 
 $requestController = new requestController();
 $messagesender = new \mod_workflow\messageSender();
