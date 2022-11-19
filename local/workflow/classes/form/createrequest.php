@@ -74,46 +74,37 @@ class createrequest extends moodleform {
         $mform->hideIf('assessment_assign', 'assessment_type', 'eq', 0);
 
         // $mform->addElement('advcheckbox', 'isbatchreq', 'Is this a batch request', 'Yes', array('group' => 1), array(0, 1));
-
-        $radioarray=array();
-        $radioarray[] = $mform->createElement('radio', 'yesno', '', get_string('yes'), 1, 'yes');
-        $radioarray[] = $mform->createElement('radio', 'yesno', '', get_string('no'), 0, 'no');
-        $mform->addGroup($radioarray, 'isbatchreq', 'Is this a batch request', array(' '), false);
-        $mform->hideIf('isbatchreq', 'req_type', 'eq', 1);
-
-      
-
-//        $mform->addElement('text', 'index_no', 'Index No'); // Add elements to your form.
-//        $mform->setType('index_no', PARAM_NOTAGS);                   // Set type of element.
-//        $mform->addRule('index_no', 'Missing Index', 'required', null, 'server');
-        // $mform->hideIf('index_no', 'isbatchreq', 'eq', 1);
-    //    $mform->setDefault('index_no', 'Please enter index no.');        // Default value.
-       
+        
         $mform->addElement('date_time_selector', 'extend_time', 'Extend Time');
         $mform->addElement('text', 'extend_time', 'Extend Time'); // Add elements to your form.
         $mform->setType('extend_time', PARAM_NOTAGS);                   // Set type of element.
         $mform->setDefault('extend_time', 'Please enter extend time.');        // Default value.
         $mform->hideIf('extend_time', 'req_type', 'eq', 1);
+        
 
-        // $mform->addElement('duration', 'timelimit', get_string('timelimit', 'quiz'));
-        // $mform->setType('timelimit', PARAM_NOTAGS);                   // Set type of element.
-        // $mform->addRule('timelimit', 'Missing Time Limit', 'required', null, 'server');        
+        $radioarray=array();
+        $radioarray[] = $mform->createElement('radio', 'yesno', '', get_string('yes'), 1, 'yes');
+        $radioarray[] = $mform->createElement('radio', 'yesno', '', get_string('no'), 0, 'no');
+        $mform->setDefault('yesno', 0);
+        $mform->addGroup($radioarray, 'isbatchreq', 'Is this a batch request', array(' '), false);
+        $mform->hideIf('isbatchreq', 'req_type', 'eq', 1);
+
+
+        $group = [];
+        $group[] =& $mform->createElement('static', 'text', '', 'Include the proofs for batch representative position along with the request.');
+        $mform->addGroup($group, 'formgroup', '', ' ', false);
+        $mform->hideIf('formgroup', 'req_type', 'eq', 1);
+        $mform->hideIf('formgroup', 'yesno', 'eq', 0);
+
 
         $mform->addElement('textarea', 'reason', "Reason", 'wrap="virtual" rows="5" cols="130"');
         $mform->setType('reason', PARAM_NOTAGS);                   // Set type of element.
         $mform->addRule('reason', 'Missing Reason', 'required', null, 'server');
-//        $mform->setDefault('reason', 'Please enter reason');        // Default value.
+        
+        $options = array('subdirs' => 1, 'maxfiles' => 1, 'accepted_types' => '*');
 
-        // $data = $this->_customdata['data'];
-        // $options = $this->_customdata['options'];
-
-        // $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => 1, 'accepted_types' => '*',
-        // 'areamaxbytes' => 10485760);
-
-        $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => -1, 'accepted_types' => '*');
-
-        $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, $options);
-        $mform->setType('file_manager', PARAM_LOCALURL);
+        $mform->addElement('filepicker', 'files', get_string('files'), null, $options);
+//        $mform->setType('files', PARAM_LOCALURL);
 
         $this->add_action_buttons(true, get_string('savechanges'));
 

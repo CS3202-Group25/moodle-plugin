@@ -42,12 +42,8 @@
     </div>
 </div>
 
-<p class="lh-base">{{description}}</p>
-
-<!--<p class="lh-base">{{profilePic}}</p>-->
-
-
 <p class="lh-base"><b>Student Index Number : </b>{{studentid}}</p>
+<p class="lh-base"><b>Request Id Number : </b>{{requestid}}</p>
 <p class="lh-base"><b>Request Type : </b>{{requesttype}}</p>
 
 {{#isassessment}}
@@ -60,10 +56,15 @@
 <p class="lh-base"><b>Reason : </b>{{description}}</p>
 <p class="lh-base"><b>State : </b>{{state}}</p>
 
+{{#hasfile}}
+    <a><a href="download.php?path={{filepath}}", class="btn btn-success">Download attached files</a></p>
+{{/hasfile}}
+
+
 {{#buttons}}
-    <a href="/mod/workflow/update.php?requestid={{requestId}}&value={{btnId}}&cmid={{cmid}}", class="btn btn-primary">{{btnValue}}</a>
+    <a href="/mod/workflow/update.php?requestid={{requestid}}&value={{btnId}}&cmid={{cmid}}", class="btn btn-primary">{{btnValue}}</a>
 {{/buttons}}
 
 {{#altbuttons}}
-    <a href="/mod/workflow/{{linkText}}?requestid={{requestId}}", class="btn btn-primary">{{btnValue}}</a>
+    <a href="/mod/workflow/askfurther.php?requestid={{requestId}}&cmid={{cmid}}", class="btn btn-primary">{{btnValue}}</a>
 {{/altbuttons}}
