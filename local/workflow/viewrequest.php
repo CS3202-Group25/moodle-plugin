@@ -46,7 +46,8 @@ $role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
 
 if ($sender->picture != 0) {
     $file = $DB->get_record('files', array('id'=>$sender->picture));
-    $photourl = moodle_url::make_pluginfile_url($file->contextid, $file->component, $file->filearea, $file->itemid, $file->filepath, $file->filename, false);   
+    $photourl = $CFG->wwwroot.'/pluginfile.php/'.$file->contextid.'/user/icon/boost/f2?rev='.$sender->picture;
+    // $photourl = moodle_url::make_pluginfile_url($file->contextid, $file->component, $file->filearea, $file->itemid, $file->filepath, $file->filename, false);   
 }else{
     $photourl = new moodle_url('/theme/image.php/boost/core/1668406882/u/f2');
 }
@@ -175,5 +176,7 @@ if($request->requesttype == "Extend Deadline"){
     ];
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 }
+
+echo $url;
 
 echo $OUTPUT->footer();
