@@ -18,7 +18,7 @@
  * Version details
  *
  * @package    mod_workflow
- * @copyright  2022 SEP15
+ * @copyright  2022 SEP25
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -177,7 +177,29 @@ class messageSender{
         $message->name = 'workflow_notification'; // Your notification name from message.php
         $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
         $message->userto = $usertoid;
-        $message->subject = 'Request Created';
+        $message->subject = 'Request Received';
+        $message->fullmessage = $msg;
+        $message->fullmessageformat = FORMAT_MARKDOWN;
+        $message->fullmessagehtml = '<p>'.$msg.'</p>';
+        $message->smallmessage = $msg;
+        $message->notification = 1; // Because this is a notification generated from Moodle, not a user-to-user message
+        $message->contexturl = (new \moodle_url("/mod/workflow/viewrequest.php?requestid=$requestid&cmid=$cmid"))->out(false); // A relevant URL for the notification
+        $message->contexturlname = 'View the Request'; // Link title explaining where users get to for the contexturl
+        $content = array('*' => array('header' => ' test ', 'footer' => ' test ')); // Extra content for specific processor
+        $message->set_additional_content('email', $content);
+
+        $messageid = message_send($message);
+    }
+
+    public function sendAskedMore($usertoid, $msg, $cmid, $requestid){
+        global $USER;
+
+        $message = new \core\message\message();
+        $message->component = 'mod_workflow'; // Your plugin's name
+        $message->name = 'workflow_notification'; // Your notification name from message.php
+        $message->userfrom = $USER; // If the message is 'from' a specific user you can set them here
+        $message->userto = $usertoid;
+        $message->subject = 'Further details required';
         $message->fullmessage = $msg;
         $message->fullmessageformat = FORMAT_MARKDOWN;
         $message->fullmessagehtml = '<p>'.$msg.'</p>';

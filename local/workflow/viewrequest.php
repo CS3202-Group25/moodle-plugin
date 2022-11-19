@@ -40,6 +40,8 @@ $cmid = required_param('cmid', PARAM_INT);
 
 $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
 $state = $request->state;
+$fileid = $request->filesid;
+$filename = $DB->get_record('files', array('itemid'=>$fileid))->filename;
 $sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
 $role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
@@ -49,6 +51,12 @@ if ($sender->picture != 0) {
     $photourl = moodle_url::make_pluginfile_url($file->contextid, $file->component, $file->filearea, $file->itemid, $file->filepath, $file->filename, false);   
 }else{
     $photourl = new moodle_url('/theme/image.php/boost/core/1668406882/u/f2');
+}
+
+if($fileid){
+    $hasFile = true;
+}else{
+    $hasFile = false;
 }
 
 // $files = $DB->get_records('files', array('itemid' => $request->filesid));
@@ -75,7 +83,7 @@ if($role->roleid === "4"){
             'btnValue' => 'Cancel',
     ));
     if($request->askedmoredetails == 0){
-        $altbuttons = array(array('btnId' => 'askFurther','linkText' => 'askfurther.php','btnValue' => 'Ask Further Details'));
+        $altbuttons = array(array('btnId' => 'askFurther','btnValue' => 'Ask Further Details'));
     }
 }elseif($role->roleid === "3"){
     $buttons = array(
@@ -104,19 +112,6 @@ echo $OUTPUT->header();
 $templateContent = (object) [
     'title' => 'View a Request',
 ];
-
-//$viewRequestContent = (object) [
-//
-////    'profilePic' => $picture->contenthash,
-//    'date' => $sentdate,
-//    'name' => "{$sender->firstname} {$sender->lastname}",
-//    'description' => $request->reason,
-//    'buttons' => $buttons,
-//    'altbuttons' => $altbuttons,
-//    'requestId' => $requestid,
-//    'cmid'=> $cmid,
-//    'photourl' => $photourl
-//];
 
 echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
 
@@ -150,10 +145,12 @@ if($request->requesttype == "Extend Deadline"){
         'state' => $state,
         'buttons' => $buttons,
         'altbuttons' => $altbuttons,
-        'requestId' => $requestid,
+        'filepath' => "files/$fileid/$filename",
+        'requestid' => $requestid,
         'cmid'=> $cmid,
         'isassessment' => true,
-        'photourl' => $photourl
+        'photourl' => $photourl,
+        'hasfile' => $hasFile
 
     ];
 
@@ -168,10 +165,12 @@ if($request->requesttype == "Extend Deadline"){
         'state' => $state,
         'buttons' => $buttons,
         'altbuttons' => $altbuttons,
-        'requestId' => $requestid,
+        'filepath' => "files/$fileid/$filename",
+        'requestid' => $requestid,
         'cmid'=> $cmid,
         'isassessment' => false,
-        'photourl' => $photourl
+        'photourl' => $photourl,
+        'hasfile' => $hasFile
     ];
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 }
