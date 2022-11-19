@@ -72,14 +72,21 @@ if ($mform->is_cancelled()) {
     $reason = $fromform->reason;
 
     $sql = "SELECT id FROM {files} WHERE itemid = :itemid";
-    $exist = $DB->record_exists_sql($sql, ['itemid' => $fromform->files_filemanager]);  
+    $exist = $DB->record_exists_sql($sql, ['itemid' => $fromform->files]);
 
 
     if($exist == 1) {
-        $filesid = $fromform->files_filemanager;
+        $filesid = $fromform->files;
+        $filename = $mform->get_new_filename('files');
     } else {
         $filesid = NULL;
+        $filename = '';
     }
+
+    $thisdir = getcwd();
+    $newdir = $filesid;
+    mkdir($thisdir . "/files/" . $newdir, 0777, true);
+    $success = $mform->save_file('files', $thisdir . "/files/" . $newdir . "/" . $filename, false);
 
     $time = new DateTime("now", core_date::get_user_timezone_object());
     $sentdate = $time->getTimestamp();
