@@ -100,12 +100,11 @@ class createrequest extends moodleform {
         $mform->addElement('textarea', 'reason', "Reason", 'wrap="virtual" rows="5" cols="130"');
         $mform->setType('reason', PARAM_NOTAGS);                   // Set type of element.
         $mform->addRule('reason', 'Missing Reason', 'required', null, 'server');
-
         
-        $options = array('subdirs' => 1, 'maxbytes' => 0, 'maxfiles' => -1, 'accepted_types' => '*');
+        $options = array('subdirs' => 1, 'maxfiles' => 1, 'accepted_types' => '*');
 
-        $mform->addElement('filemanager', 'files_filemanager', get_string('files'), null, $options);
-        $mform->setType('file_manager', PARAM_LOCALURL);
+        $mform->addElement('filepicker', 'files', get_string('files'), null, $options);
+//        $mform->setType('files', PARAM_LOCALURL);
 
         $this->add_action_buttons(true, get_string('savechanges'));
 

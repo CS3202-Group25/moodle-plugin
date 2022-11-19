@@ -24,7 +24,7 @@
 
 require('../../config.php');
 
-global $DB, $OUTPUT, $PAGE, $USER;
+global $DB, $OUTPUT, $PAGE, $USER, $CFG;
 
 require_login();
 
@@ -103,21 +103,25 @@ if($create_capability){
     }
 }
 elseif($forward_capability){
-    $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Index no.', 4=>'Status');
+    if($USER -> id == $workflow -> instructorid) {
+        $header = array(1 => 'Request ID', 2 => 'Request Type', 3 => 'Index no.', 4 => 'Status');
 
-    $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'Pending'";
-    $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflow->id]);
+        $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'Pending'";
+        $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflow->id]);
 
-    if(sizeof($requests) != 0) {
-        $templatecontent_table = (object)[
-            'requests' => array_values($requests),
-            'headers' => array_values($header),
-            'cmid' => $cm->id,
-        ];
+        if (sizeof($requests) != 0) {
+            $templatecontent_table = (object)[
+                'requests' => array_values($requests),
+                'headers' => array_values($header),
+                'cmid' => $cm->id,
+            ];
 
-        echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+            echo $OUTPUT->render_from_template('mod_workflow/request_table', $templatecontent_table);
+        } else {
+            echo '<p style="text-align: center;margin-top:25px;">No received requests</p>';
+        }
     }else{
-        echo '<p style="text-align: center;margin-top:25px;">No received requests</p>';
+        echo '<p style="text-align: center;margin-top:25px;">You are not assigned to this workflow</p>';
     }
 }
 elseif($approve_capability){
