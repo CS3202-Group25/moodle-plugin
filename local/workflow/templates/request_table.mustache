@@ -30,6 +30,11 @@
 <style>
     tr {cursor: pointer}
 </style>
+
+{{#buttons}}
+    <a href="/mod/workflow/createrequest.php?cmid={{cmid}}", class="btn btn-primary mb-3">{{btnValue}}</a>
+{{/buttons}}
+
 <table class="table table-hover">
     <thead>
     <tr>
@@ -54,6 +59,3 @@
     </tbody>
 </table>
 
-{{#buttons}}
-    <a href="/mod/workflow/createrequest.php?cmid={{cmid}}", class="btn btn-primary">{{btnValue}}</a>
-{{/buttons}}
