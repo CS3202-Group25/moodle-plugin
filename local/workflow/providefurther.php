@@ -26,7 +26,7 @@ require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 global $DB;
 
-$requestId=$_GET["requestId"];
+$requestId=$_GET["requestid"];
 
 $PAGE->set_url(new moodle_url('/mod/workflow/providefurther.php'));
 $PAGE->set_context(\context_system::instance());
@@ -41,6 +41,7 @@ if ($user_role != '5') {
 }
 
 $form1=new provideFurther();
+$form1->setReqID($requestId);
 
 $requestController = new requestController();
 

@@ -27,7 +27,7 @@ class askFurther extends moodleform{
 
         $mform=$this->_form;
 
-        $mform->addElement('textarea','reqID','Request ID');
+        $mform->addElement('text','reqID','Request ID',array('readonly'));
         $mform->setType('reqID',PARAM_NOTAGS);
         
         $mform->addElement('textarea','message','Enter what is required');
@@ -36,8 +36,8 @@ class askFurther extends moodleform{
         $this->add_action_buttons(true,"Send Inquiry");
     }
 
-    function validation($data, $files) {
-        return array();
+    public function setReqID($rid){
+        $this->_form->setDefault('reqID',$rid);
     }
 }
 ?>
