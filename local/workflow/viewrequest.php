@@ -47,6 +47,7 @@ $filename = $DB->get_record('files', array('itemid'=>$fileid))->filename;
 $sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
 $role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
+$askedmore = $request->morereason;
 
 $PAGE->set_heading("View Request: $request->requesttype");
 $PAGE->navbar->add("View Request: $request->requesttype");
@@ -66,6 +67,20 @@ if($fileid){
     $hasFile = false;
 }
 
+if($askedmore){
+    $hasmorereason = true;
+    $morereason = $request->morereason;
+    $morefilesid = $request->morefilesid;
+    $morefilename = $DB->get_record('files', array('itemid'=>$morefilesid))->filename;
+    if($morefilesid){
+        $hasmorefile = true;
+    }else{
+        $hasmorefile = false;
+    }
+}else{
+    $hasmorereason = false;
+}
+
 // $files = $DB->get_records('files', array('itemid' => $request->filesid));
 // $sql = "SELECT * FROM {files} WHERE itemid = :itemid AND filesize != 0";
 // $files = $DB->get_records_sql($sql, ['itemid' => $request->filesid]);
@@ -80,15 +95,17 @@ if($fileid){
 
 $altbuttons=array();
 if($role->roleid === "4"){
-    $buttons = array(
-        array(
-            'btnId' => 'forward',
-            'btnValue' => 'Forward',
-    ),
-        array(
-            'btnId' => 'cancelIns',
-            'btnValue' => 'Cancel',
-    ));
+    if($request->askedmoredetails == 0) {
+        $buttons = array(
+            array(
+                'btnId' => 'forward',
+                'btnValue' => 'Forward',
+            ),
+            array(
+                'btnId' => 'cancelIns',
+                'btnValue' => 'Cancel',
+            ));
+    }
     if($request->askedmoredetails == 0){
         $altbuttons = array(array('btnId' => 'askFurther','linkText' => 'askfurther.php','btnValue' => 'Ask Further Details'));
     }
@@ -103,7 +120,7 @@ if($role->roleid === "4"){
             'btnValue' => 'Disapprove',
         ));
 }else{
-    if($request->state == "Pending") {
+    if($request->state == "Pending" || $request->state == "Asked More Details" || $request->state == "More Details Added") {
         $buttons = array(
             array(
                 'btnId' => 'cancelStudent',
@@ -157,7 +174,13 @@ if($request->requesttype == "Extend Deadline"){
         'cmid'=> $cmid,
         'isassessment' => true,
         'photourl' => $photourl,
-        'hasfile' => $hasFile
+        'hasfile' => $hasFile,
+        'hasmorefile' => $hasmorefile,
+        'hasmorereason' => $hasmorereason,
+        'morereason' => $morereason,
+        'morefilesid' => $morefilesid,
+        'morefilename' => $morefilename,
+        'morefilepath' => "files/$morefilesid/$morefilename",
 
     ];
 
@@ -177,11 +200,15 @@ if($request->requesttype == "Extend Deadline"){
         'cmid'=> $cmid,
         'isassessment' => false,
         'photourl' => $photourl,
-        'hasfile' => $hasFile
+        'hasfile' => $hasFile,
+        'hasmorefile' => $hasmorefile,
+        'hasmorereason' => $hasmorereason,
+        'morereason' => $morereason,
+        'morefilesid' => $morefilesid,
+        'morefilename' => $morefilename,
+        'morefilepath' => "files/$morefilesid/$morefilename",
     ];
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 }
-
-echo $url;
 
 echo $OUTPUT->footer();

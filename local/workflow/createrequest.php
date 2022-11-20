@@ -78,7 +78,6 @@ if ($mform->is_cancelled()) {
     $sql = "SELECT id FROM {files} WHERE itemid = :itemid";
     $exist = $DB->record_exists_sql($sql, ['itemid' => $fromform->files]);
 
-
     if($exist == 1) {
         $filesid = $fromform->files;
         $filename = $mform->get_new_filename('files');
@@ -121,12 +120,6 @@ echo $OUTPUT->header();
 $temp = new stdClass();
 $temp->cmid = $cmid;
 $mform->set_data($temp);
-
-//$templatecontent = (object) [
-//    'title' => 'Create Request'
-//];
-//
-//echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templatecontent);
 
 //displays the form
 $mform->display();

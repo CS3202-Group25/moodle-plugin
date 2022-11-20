@@ -108,7 +108,7 @@ elseif($forward_capability){
     if($USER -> id == $workflow -> instructorid) {
         $header = array(1 => 'Request ID', 2 => 'Request Type', 3 => 'Index no.', 4 => 'Status');
 
-        $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'Pending'";
+        $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND (state = 'Pending' OR state = 'Asked More Details' OR state = 'More Details Added')";
         $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflow->id]);
 
         if (sizeof($requests) != 0) {

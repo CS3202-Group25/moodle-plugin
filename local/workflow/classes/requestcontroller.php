@@ -105,7 +105,11 @@ class requestController
 
     public function updateDetails($requestid,$details,$files){
         global $DB;
-        $sqlquery = "update mdl_workflow_request set reason='$details', filesid='$files' where requestid='$requestid'";
+        if($files){
+            $sqlquery = "update mdl_workflow_request set morereason='$details', morefilesid='$files', askedmoredetails=0, state='More Details Added' where requestid='$requestid'";
+        }else{
+            $sqlquery = "update mdl_workflow_request set morereason='$details', state='More Details Added', askedmoredetails=0 where requestid='$requestid'";
+        }
         try {
             return $DB->execute($sqlquery);
         } catch(dml_exception $e) {

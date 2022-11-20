@@ -26,7 +26,8 @@ require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 global $DB;
 
-$requestId=$_GET["requestid"];
+$requestId=optional_param('requestid', true, PARAM_INT);;
+$cmid = optional_param('cmid', true, PARAM_INT);
 
 $PAGE->set_url(new moodle_url('/mod/workflow/providefurther.php'));
 $PAGE->set_context(\context_system::instance());
@@ -45,23 +46,38 @@ $form1->setReqID($requestId);
 
 $requestController = new requestController();
 
-echo $OUTPUT->header();
-
-$templatecontext=(object)[
-    'description'=>"Ask a student for further details about the selected request.",
-];
-
-echo $OUTPUT->render_from_template("mod_workflow/provide_further",$templatecontext);
-
 if($form1->is_cancelled()){
-    redirect($CFG->wwwroot.'/my',"You cancelled sending details!");
+    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, "You cancelled sending details!");
 }else if($formdata=$form1->get_data()){
     $reqID=$formdata->reqID;
     $details=$formdata->details;
-    $files=$formdata->files;
-    $requestController->updateDetails($reqID,$details,$files);
-    redirect($CFG->wwwroot.'/my',"Required details sent!");
+
+    $sql = "SELECT id FROM {files} WHERE itemid = :itemid";
+    $exist = $DB->record_exists_sql($sql, ['itemid' => $formdata->files]);
+
+    if($exist == 1) {
+        $filesid = $formdata->files;
+        $filename = $form1->get_new_filename('files');
+    } else {
+        $filesid = NULL;
+        $filename = '';
+    }
+
+    $thisdir = getcwd();
+    $newdir = $filesid;
+    mkdir($thisdir . "/files/" . $newdir, 0777, true);
+    $success = $form1->save_file('files', $thisdir . "/files/" . $newdir . "/" . $filename, false);
+
+    $requestController->updateDetails($reqID,$details,$filesid);
+
+    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted send more details form successfully.');
 }
+
+echo $OUTPUT->header();
+
+$temp = new stdClass();
+$temp->cmid = $cmid;
+$form1->set_data($temp);
 
 $form1->display();
 

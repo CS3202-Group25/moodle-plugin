@@ -27,13 +27,17 @@ class provideFurther extends moodleform{
 
         $mform=$this->_form;
 
+        $mform->addElement('hidden', 'cmid');
+        $mform->setType('cmid', PARAM_INT);
+
         $mform->addElement('text','reqID','Request ID',array('readonly'));
         $mform->setType('reqID',PARAM_NOTAGS);
         
-        $mform->addElement('textarea','details','More Details',);
+        $mform->addElement('textarea','details','More Details', 'wrap="virtual" rows="5" cols="130"');
         $mform->setType('details',PARAM_NOTAGS);
 
-        $mform->addElement('filepicker','files','Select Files');
+        $options = array('subdirs' => 1, 'maxfiles' => 1, 'accepted_types' => '*');
+        $mform->addElement('filepicker','files',get_string('Select Files') , null, $options);
 
         $this->add_action_buttons(true,"Send Details");
     }
