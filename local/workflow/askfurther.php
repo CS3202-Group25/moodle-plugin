@@ -59,23 +59,11 @@ if($form1->is_cancelled()){
     redirect($CFG->wwwroot.'/my',"You cancelled asking for details!");
 }else if($formdata=$form1->get_data()){
     $reqID=$formdata->reqID;
-    $requestController->confirmInquiry($reqID);
-    $message = new \core\message\message();
-    $message->component = "mod_workflow";
-    $message->name = "workflow_notification";
-    $message->userfrom = $USER;
+    $inquiry=$formdata->message;
+    $requestController->confirmInquiry($reqID,$inquiry);
     $receiver = $DB->get_record_sql("SELECT * FROM mdl_workflow_request WHERE requestid=".$reqID)->studentid;
-    $message->userto = $receiver;
-    $message->subject = "Further details required!";
-    $message->fullmessagehtml = "<p>Following additional details regarding request '$reqID' are required.</p><br><br><p>'$details'</p>";
-    $message->fullmessageformat = FORMAT_MARKDOWN;
-    $message->smallmessage = "Details";
-    $message->notification = 1;
-    $message->contexturl = (new \moodle_url("/mod/workflow/view.php?id=2"))->out(false); 
-    $message->contexturlname = 'View workflow requests';
-    $content = array('*' => array('header' => ' test ', 'footer' => ' test '));
-    $message->set_additional_content('email', $content);
-    $messageID = message_send($message);
+    $cmid = optional_param('cmid', true, PARAM_INT);
+    $messagesender->sendAskedMore($receiver,"Further details about $reqID are required.",$cmid,$reqID);
     redirect($CFG->wwwroot.'/my',"Inquiry sent!");
 }
 

@@ -84,7 +84,7 @@ if($role->roleid === "4"){
             'btnValue' => 'Cancel',
     ));
     if($request->askedmoredetails == 0){
-        $altbuttons = array(array('btnId' => 'askFurther','btnValue' => 'Ask Further Details'));
+        $altbuttons = array(array('btnId' => 'askFurther','linkText' => 'askfurther.php','btnValue' => 'Ask Further Details'));
     }
 }elseif($role->roleid === "3"){
     $buttons = array(

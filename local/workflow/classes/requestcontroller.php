@@ -93,9 +93,9 @@ class requestController
         }
     }
 
-    public function confirmInquiry($requestid){
+    public function confirmInquiry($requestid,$inquiry){
         global $DB;
-        $sqlquery="update mdl_workflow_request set askedmoredetails=1 where requestid=".$requestid;
+        $sqlquery="update mdl_workflow_request set askedmoredetails=1,commentlecturer='$inquiry' where requestid='$requestid'";
         try {
             return $DB->execute($sqlquery);
         } catch(dml_exception $e) {
