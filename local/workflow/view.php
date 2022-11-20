@@ -47,12 +47,12 @@ $forward_capability = has_capability('mod/workflow:forwardrequest', $context);
 $approve_capability = has_capability('mod/workflow:approverequest', $context);
 
 echo $OUTPUT->header();
-
-$templatecontent = (object) [
-    'title' => $workflow->name
-];
-
-echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templatecontent);
+//
+//$templatecontent = (object) [
+//    'title' => $workflow->name
+//];
+//
+//echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templatecontent);
 
 if($create_capability){
     $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Received By', 4=>'Status');

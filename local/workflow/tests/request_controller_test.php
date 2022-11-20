@@ -13,7 +13,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package     local_workflow
+ * @package     mod_workflow
  * @author
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var stdClass $plugin
@@ -21,39 +21,95 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use local_workflow\workflowController;
-
 global $CFG;
-require_once($CFG->dirroot . '/local/workflow/classes/workflowController.php');
+require_once($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 
 
 class request_controller_test extends advanced_testcase
 {
-    public function test_create_request()
+    public function test_createRequest()
     {
         $this->resetAfterTest();
-        $this->setUser(3);
-        $workflowController = new workflowController();
-        $workflows = $workflowController->getAllWorkflows();
-        $this->assertEmpty($workflows);
+        $this->setUser(2);
+        $requestController = new requestController();
+        $requests = $requestController->getAllRequests();
+        $this->assertEmpty($requests);
 
-        $courseid = 1;
-        $lecturerid = 10;
-        $instructorid = 10;
-        $startdate = 20220910;
-        $enddate = 20230910;
+        $workflowid = "10";
+        $studentid = "100";
+        $requesttype = "Extend Deadline";
+        $isbatchrequest = 0;
+        $reason = 'Test Reason';
+        $askedmoredetails = 0;
+        $filesid = 10;
+        $commentlecturer = 'Test comment';
+        $sentdate = 10;
+        $receivedby = 2;
 
-        $newWorkflow = $workflowController->createWorkflow($courseid, $lecturerid, $instructorid, $startdate, $enddate);
+        $testrequest = $requestController->createRequest($workflowid, $studentid, $requesttype, $isbatchrequest, $reason, $filesid, $askedmoredetails, $commentlecturer, $sentdate, $receivedby);
 
-        $this->assertTrue($newWorkflow);
-        $workflows = $workflowController->getAllWorkflows();
-        $this->assertNotEmpty($workflows);
+        $requests = $requestController->getAllRequests();
+        $this->assertNotEmpty($requests);
 
-        $lastRecord = array_pop($workflows);
+        $record = array_pop($requests);
 
-        $this->assertEquals(1, $lastRecord->courseid);
-//        $test_workflow_name = $workflow->getName($record->id);
-//        $this->assertEquals("Test workflow", $test_workflow_name);
+        $testRequestReason = $requestController->getRequest($record->requestid)->reason;
+        $this->assertEquals('Test Reason', $testRequestReason);
+    }
+
+    public function test_createRequestExtend()
+    {
+        $this->resetAfterTest();
+        $this->setUser(2);
+        $requestController = new requestController();
+        $requests = $requestController->getAllExtendRequests();
+        $this->assertEmpty($requests);
+
+        $requestid = "10";
+        $assessmentid = "1";
+        $assessmenttype = "Quiz";
+        $extendtime = "3";
+
+        $testrequest = $requestController->createRequestExtend($requestid, $assessmenttype, $assessmentid, $extendtime);
+
+        $requests = $requestController->getAllExtendRequests();
+        $this->assertNotEmpty($requests);
+
+        $record = array_pop($requests);
+
+        $testRequestType = $requestController->getExtendRequest($record->requestid)->assessmenttype;
+        $this->assertEquals('Quiz', $testRequestType);
+    }
+
+    public function test_changeStatus()
+    {
+        $this->resetAfterTest();
+        $this->setUser(2);
+        $requestController = new requestController();
+        $requests = $requestController->getAllRequests();
+        $this->assertEmpty($requests);
+
+        $workflowid = "10";
+        $studentid = "100";
+        $requesttype = "Extend Deadline";
+        $isbatchrequest = 0;
+        $reason = 'Test Reason';
+        $askedmoredetails = 0;
+        $filesid = 10;
+        $commentlecturer = 'Test comment';
+        $sentdate = 10;
+        $receivedby = 2;
+
+        $testrequest = $requestController->createRequest($workflowid, $studentid, $requesttype, $isbatchrequest, $reason, $filesid, $askedmoredetails, $commentlecturer, $sentdate, $receivedby);
+
+        $requests = $requestController->getAllRequests();
+        $this->assertNotEmpty($requests);
+
+        $record = array_pop($requests);
+
+        $requestController->changeStatus($record->requestid, "Forwarded");
+        $testRequestState = $requestController->getRequest($record->requestid)->state;
+        $this->assertEquals('Forwarded', $testRequestState);
     }
 }
 
