@@ -2,12 +2,12 @@
 
 ## Group 25
 
-### Mentor: Dr Gayashan Amarasinghe
+#### Mentor: Dr Gayashan Amarasinghe
 
-### Team Members:
-### Balara Sawanmee - 190572L
-### Aruna Senanayake - 190576D
-### Thevin Senath - 190583V
+#### Team Members:
+#### Balara Sawanmee - 190572L
+#### Aruna Senanayake - 190576D
+#### Thevin Senath - 190583V
 
 Moodle plugin for Establishing Workflows to Handle Requests provides students an area to submit their requests regarding course content to the relevant lecturer through the Moodle without using emails. Using this plugin students can directly send requests asking for extending deadlines and recorrections to the lecturer and the lecturer can eithe approve or disapprove these requests. If the lecturer approve a extend deadline request, the moodle automatically change the deadline of the relevant assessment and that is a main feature in this plugin.
 
