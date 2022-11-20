@@ -35,6 +35,8 @@ $context = context_course::instance($course->id);
 
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title($workflow->name);
+$PAGE->set_heading($workflow->name);
+$PAGE->set_cm($cm, $course);
 
 $roleid = $DB->get_record('role_assignments', array('contextid'=>$context->id, 'userid'=>$USER->id)) -> roleid;
 
