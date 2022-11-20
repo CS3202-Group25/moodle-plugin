@@ -59,7 +59,8 @@ if($form1->is_cancelled()){
     redirect($CFG->wwwroot.'/my',"You cancelled asking for details!");
 }else if($formdata=$form1->get_data()){
     $reqID=$formdata->reqID;
-    $requestController->confirmInquiry($reqID);
+    $inquiry=$formdata->message;
+    $requestController->confirmInquiry($reqID,$inquiry);
     $receiver = $DB->get_record_sql("SELECT * FROM mdl_workflow_request WHERE requestid=".$reqID)->studentid;
     $cmid = optional_param('cmid', true, PARAM_INT);
     $messagesender->sendAskedMore($receiver,"Further details about $reqID are required.",$cmid,$reqID);
