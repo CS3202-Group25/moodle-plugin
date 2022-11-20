@@ -27,7 +27,8 @@ require_once ($CFG->dirroot . '/mod/workflow/classes/messagesender.php');
 
 global $DB,$USER;
 
-$requestId=$_GET["requestid"];
+$requestId=optional_param('requestid', true, PARAM_INT);;
+$cmid = optional_param('cmid', true, PARAM_INT);
 
 $PAGE->set_url(new moodle_url('/mod/workflow/askfurther.php'));
 $PAGE->set_context(\context_system::instance());
@@ -47,27 +48,30 @@ $form1->setReqID($requestId);
 $requestController = new requestController();
 $messagesender = new \mod_workflow\messageSender();
 
-echo $OUTPUT->header();
-
-$templatecontext=(object)[
-    'description'=>"Ask a student for further details about the selected request."
-];
-
-echo $OUTPUT->render_from_template("mod_workflow/ask_further",$templatecontext);
 
 if($form1->is_cancelled()){
-    redirect($CFG->wwwroot.'/my',"You cancelled asking for details!");
+    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You cancelled asking for details!');
 }else if($formdata=$form1->get_data()){
     $reqID=$formdata->reqID;
     $inquiry=$formdata->message;
+
     $requestController->confirmInquiry($reqID,$inquiry);
+    $requestController->changeStatus($reqID, "Asked More Details");
+
     $receiver = $DB->get_record_sql("SELECT * FROM mdl_workflow_request WHERE requestid=".$reqID)->studentid;
-    $cmid = optional_param('cmid', true, PARAM_INT);
+
     $messagesender->sendAskedMore($receiver,"Further details about $reqID are required.",$cmid,$reqID);
-    redirect($CFG->wwwroot.'/my',"Inquiry sent!");
+    redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted asked more details form successfully.');
 }
+
+echo $OUTPUT->header();
+
+$temp = new stdClass();
+$temp->cmid = $cmid;
+$form1->set_data($temp);
 
 $form1->display();
 
 echo $OUTPUT->footer();
+
 ?>

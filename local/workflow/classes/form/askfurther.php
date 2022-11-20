@@ -18,6 +18,7 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var stdClass $plugin
  */
+global $CFG;
 
 require_once("$CFG->libdir/formslib.php");
 
@@ -27,10 +28,13 @@ class askFurther extends moodleform{
 
         $mform=$this->_form;
 
+        $mform->addElement('hidden', 'cmid');
+        $mform->setType('cmid', PARAM_INT);
+
         $mform->addElement('text','reqID','Request ID',array('readonly'));
         $mform->setType('reqID',PARAM_NOTAGS);
         
-        $mform->addElement('textarea','message','Enter what is required');
+        $mform->addElement('textarea','message','Enter what is required', 'wrap="virtual" rows="5" cols="130"');
         $mform->setType('message',PARAM_NOTAGS);
 
         $this->add_action_buttons(true,"Send Inquiry");
