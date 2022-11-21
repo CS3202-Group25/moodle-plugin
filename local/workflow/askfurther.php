@@ -64,7 +64,7 @@ if($form1->is_cancelled()){
 
     $receiver = $DB->get_record_sql("SELECT * FROM mdl_workflow_request WHERE requestid=".$reqID)->studentid;
 
-    $messagesender->sendAskedMore($receiver,"Following additional details about $reqID are required. <br> $message",$cmid,$reqID);
+    $messagesender->sendAskedMore($receiver,"Following additional details about $reqID are required. <br> $inquiry",$cmid,$reqID);
     redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted asked more details form successfully.');
 }
 
