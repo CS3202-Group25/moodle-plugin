@@ -36,8 +36,11 @@ All the user instructions for the plugin are mentioned in the User Manual.
 ### Resources:
 
 GitHub Repository Link: https://github.com/CS3202-Group25/moodle-plugin.git
+
 User Manual: https://drive.google.com/file/d/1metrtl-4O7h-YiceHzU_8dW4AUYVoQfa/view?usp=sharing
+
 UI Testing: https://drive.google.com/drive/folders/1EBddL90YZfKB5DelwqADy-WshbC-2HBx?usp=share_link
+
 Youtube Video Demonstration: https://youtu.be/u1_VF8Qh33o
 
 
