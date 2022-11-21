@@ -26,6 +26,11 @@ require_once (__DIR__ . '/../../config.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/dbcontroller.php');
 
+
+$requestid = required_param('requestid', PARAM_INT);
+$cmid = required_param('cmid', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($cmid, 'workflow');
+
 $PAGE->set_url(new moodle_url('/mod/workflow/viewrequest.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title("View a Request");
@@ -35,9 +40,6 @@ require_login();
 $requestController = new requestController();
 $dbController = new dbController();
 
-$requestid = required_param('requestid', PARAM_INT);
-$cmid = required_param('cmid', PARAM_INT);
-
 $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
 $state = $request->state;
 $fileid = $request->filesid;
@@ -45,6 +47,11 @@ $filename = $DB->get_record('files', array('itemid'=>$fileid))->filename;
 $sender = $DB->get_record('user', array('id'=>$request->studentid));
 $sentdate = userdate($request->sentdate);
 $role = $DB->get_record('role_assignments',array('userid'=>$USER->id));
+$askedmore = $request->morereason;
+
+$PAGE->set_heading("View Request: $request->requesttype");
+$PAGE->navbar->add("View Request: $request->requesttype");
+$PAGE->set_cm($cm, $course);
 
 if ($sender->picture != 0) {
     $file = $DB->get_record('files', array('id'=>$sender->picture));
@@ -58,6 +65,20 @@ if($fileid){
     $hasFile = true;
 }else{
     $hasFile = false;
+}
+
+if($askedmore){
+    $hasmorereason = true;
+    $morereason = $request->morereason;
+    $morefilesid = $request->morefilesid;
+    $morefilename = $DB->get_record('files', array('itemid'=>$morefilesid))->filename;
+    if($morefilesid){
+        $hasmorefile = true;
+    }else{
+        $hasmorefile = false;
+    }
+}else{
+    $hasmorereason = false;
 }
 
 // $files = $DB->get_records('files', array('itemid' => $request->filesid));
@@ -74,15 +95,17 @@ if($fileid){
 
 $altbuttons=array();
 if($role->roleid === "4"){
-    $buttons = array(
-        array(
-            'btnId' => 'forward',
-            'btnValue' => 'Forward',
-    ),
-        array(
-            'btnId' => 'cancelIns',
-            'btnValue' => 'Cancel',
-    ));
+    if($request->askedmoredetails == 0) {
+        $buttons = array(
+            array(
+                'btnId' => 'forward',
+                'btnValue' => 'Forward',
+            ),
+            array(
+                'btnId' => 'cancelIns',
+                'btnValue' => 'Cancel',
+            ));
+    }
     if($request->askedmoredetails == 0){
         $altbuttons = array(array('btnId' => 'askFurther','linkText' => 'askfurther.php','btnValue' => 'Ask Further Details'));
     }
@@ -97,7 +120,7 @@ if($role->roleid === "4"){
             'btnValue' => 'Disapprove',
         ));
 }else{
-    if($request->state == "Pending") {
+    if($request->state == "Pending" || $request->state == "Asked More Details" || $request->state == "More Details Added") {
         $buttons = array(
             array(
                 'btnId' => 'cancelStudent',
@@ -110,11 +133,11 @@ if($role->roleid === "4"){
 
 echo $OUTPUT->header();
 
-$templateContent = (object) [
-    'title' => 'View a Request',
-];
-
-echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
+//$templateContent = (object) [
+//    'title' => 'View a Request',
+//];
+//
+//echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
 
 if($request->requesttype == "Extend Deadline"){
     $requestextend = $DB->get_record('workflow_request_extend', array('requestid'=>$requestid));
@@ -151,7 +174,13 @@ if($request->requesttype == "Extend Deadline"){
         'cmid'=> $cmid,
         'isassessment' => true,
         'photourl' => $photourl,
-        'hasfile' => $hasFile
+        'hasfile' => $hasFile,
+        'hasmorefile' => $hasmorefile,
+        'hasmorereason' => $hasmorereason,
+        'morereason' => $morereason,
+        'morefilesid' => $morefilesid,
+        'morefilename' => $morefilename,
+        'morefilepath' => "files/$morefilesid/$morefilename",
 
     ];
 
@@ -171,11 +200,15 @@ if($request->requesttype == "Extend Deadline"){
         'cmid'=> $cmid,
         'isassessment' => false,
         'photourl' => $photourl,
-        'hasfile' => $hasFile
+        'hasfile' => $hasFile,
+        'hasmorefile' => $hasmorefile,
+        'hasmorereason' => $hasmorereason,
+        'morereason' => $morereason,
+        'morefilesid' => $morefilesid,
+        'morefilename' => $morefilename,
+        'morefilepath' => "files/$morefilesid/$morefilename",
     ];
     echo $OUTPUT->render_from_template('mod_workflow/view_request', $viewRequestContent);
 }
-
-echo $url;
 
 echo $OUTPUT->footer();

@@ -25,13 +25,17 @@ require_once($CFG->dirroot . '/mod/workflow/classes/form/createrequest.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/messagesender.php');
 
+$cmid = optional_param('cmid', true, PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($cmid, 'workflow');
+
 $PAGE->set_url(new moodle_url('/mod/workflow/createrequest.php'));
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title('Create Request');
+$PAGE->set_heading('Create Request');
+$PAGE->navbar->add('Create Request');
+$PAGE->set_cm($cm, $course);
 
 require_login();
-
-$cmid = optional_param('cmid', true, PARAM_INT);
 
 $workflowid = $DB->get_record('course_modules', array('id'=>$cmid))->instance;
 $instructorid = $DB->get_record('workflow', array('id'=> $workflowid))->instructorid;
@@ -73,7 +77,6 @@ if ($mform->is_cancelled()) {
 
     $sql = "SELECT id FROM {files} WHERE itemid = :itemid";
     $exist = $DB->record_exists_sql($sql, ['itemid' => $fromform->files]);
-
 
     if($exist == 1) {
         $filesid = $fromform->files;
@@ -117,12 +120,6 @@ echo $OUTPUT->header();
 $temp = new stdClass();
 $temp->cmid = $cmid;
 $mform->set_data($temp);
-
-$templatecontent = (object) [
-    'title' => 'Create Request'
-];
-
-echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templatecontent);
 
 //displays the form
 $mform->display();

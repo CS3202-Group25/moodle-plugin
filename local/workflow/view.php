@@ -35,6 +35,8 @@ $context = context_course::instance($course->id);
 
 $PAGE->set_context(\context_system::instance());
 $PAGE->set_title($workflow->name);
+$PAGE->set_heading($workflow->name);
+$PAGE->set_cm($cm, $course);
 
 $roleid = $DB->get_record('role_assignments', array('contextid'=>$context->id, 'userid'=>$USER->id)) -> roleid;
 
@@ -106,7 +108,7 @@ elseif($forward_capability){
     if($USER -> id == $workflow -> instructorid) {
         $header = array(1 => 'Request ID', 2 => 'Request Type', 3 => 'Index no.', 4 => 'Status');
 
-        $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND state = 'Pending'";
+        $sql = "SELECT requestid, requesttype, studentid, state FROM {workflow_request} WHERE receivedby = :instructorid AND workflowid = :workflowid AND (state = 'Pending' OR state = 'Asked More Details' OR state = 'More Details Added')";
         $requests = $DB->get_records_sql($sql, ['instructorid' => $USER->id, 'workflowid' => $workflow->id]);
 
         if (sizeof($requests) != 0) {
