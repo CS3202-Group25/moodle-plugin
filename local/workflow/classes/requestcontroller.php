@@ -210,4 +210,9 @@ class requestController
         global $DB;
         return $DB->delete_records('workflow_request', ['requestid' => $requestid]);
     }
+
+    public function deleteNotification($msg){
+        global $DB;
+        return $DB->delete_records('notifications', ['fullmessage' => $msg]);
+    }
 }

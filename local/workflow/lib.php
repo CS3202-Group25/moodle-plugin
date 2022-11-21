@@ -25,7 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 use mod_workflow\workflow;
-
 /**
  * Return if the plugin supports $feature.
  *
@@ -55,9 +54,20 @@ function workflow_supports($feature)
  */
 function workflow_add_instance($workflow)
 {
-    global $DB;
+    global $DB, $CFG;
 
-    return $DB->insert_record('workflow', $workflow);
+    $oldworkflows= $DB->get_records('workflow');
+    $courseids = [];
+
+    foreach ($oldworkflows as $oldworkflow) {
+        array_push($courseids, $oldworkflow->courseid);
+    }
+
+    if(in_array($workflow->courseid, $courseids)){
+        redirect($CFG->wwwroot."/course/view.php?id=$workflow->courseid","A workflow already exist! You cannot create a another one!");
+    }else{
+        return $DB->insert_record('workflow', $workflow);
+    }
 }
 
 /**
