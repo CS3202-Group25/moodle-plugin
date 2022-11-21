@@ -44,26 +44,37 @@ $requestController = new requestController();
 $messagesender = new \mod_workflow\messageSender();
 
 if($value === 'cancelIns') {
+
     $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
-//    $requestController->deleteRequest($requestid);
     $requestController->changeStatus($requestid, 'Cancelled  by Instructor');
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have successfully deleted the request");
+
 }elseif ($value === 'cancelStudent') {
+
     $requestController->deleteRequest($requestid);
+    $msg = "You received a request $requestid of the type of $request->requesttype.";
+    $requestController->deleteNotification($msg);
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have successfully deleted the request");
+
 }elseif ($value === 'approve'){
+
     $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
     $requestController->changeStatus($requestid, 'Approved');
     $requestController->changeDeadline($requestid);
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have approved the request");
+
 }elseif($value === 'disapprove'){
+
     $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
     $requestController->changeStatus($requestid, 'Disapproved');
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have approved the request");
+
 }elseif($value === 'forward'){
+
     $messagesender->send($studentid, $cmid, $requestid, $value, $contextid);
     $messagesender->send($lecturerid, $cmid, $requestid, $value, $contextid);
     $requestController->changeStatus($requestid, 'Forwarded');
     $requestController->changeReceiver($requestid);
     redirect("$CFG->wwwroot/mod/workflow/view.php?id=$cmid", "You have forwarded the request to lecturer");
+
 }

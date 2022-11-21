@@ -37,14 +37,14 @@ $PAGE->set_cm($cm, $course);
 
 require_login();
 
+$requestController = new requestController();
+$messagesender = new \mod_workflow\messageSender();
+
 $workflowid = $DB->get_record('course_modules', array('id'=>$cmid))->instance;
 $instructorid = $DB->get_record('workflow', array('id'=> $workflowid))->instructorid;
 
 //Instantiate simplehtml_form
 $mform = new createrequest();
-
-$requestController = new requestController();
-$messagesender = new \mod_workflow\messageSender();
 
 //Form processing and displaying is done here
 if ($mform->is_cancelled()) {
@@ -105,13 +105,9 @@ if ($mform->is_cancelled()) {
         $requestController->createRequestExtend($requestid, $assessmenttype, $assessmentid, $extendtime);
     }
 
-    $messagesender->sendCreate($instructorid, "You received a request of the type of $requesttype.", $cmid, $requestid);
+    $messagesender->sendCreate($instructorid, "You received a request $requestid of the type of $requesttype.", $cmid, $requestid);
 
     redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted the create request form');
-
-} else {
-    // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
-    // or on the first display of the form.
 
 }
 
@@ -121,7 +117,6 @@ $temp = new stdClass();
 $temp->cmid = $cmid;
 $mform->set_data($temp);
 
-//displays the form
 $mform->display();
 
 echo $OUTPUT->footer();
