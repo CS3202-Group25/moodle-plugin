@@ -39,7 +39,6 @@ $PAGE->set_heading($workflow->name);
 $PAGE->set_cm($cm, $course);
 
 $roleid = $DB->get_record('role_assignments', array('contextid'=>$context->id, 'userid'=>$USER->id)) -> roleid;
-
 $rolename = $DB->get_record('role', array('id'=>$roleid)) -> shortname;
 
 $create_capability = has_capability('mod/workflow:createrequest', $context);
@@ -47,12 +46,6 @@ $forward_capability = has_capability('mod/workflow:forwardrequest', $context);
 $approve_capability = has_capability('mod/workflow:approverequest', $context);
 
 echo $OUTPUT->header();
-//
-//$templatecontent = (object) [
-//    'title' => $workflow->name
-//];
-//
-//echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templatecontent);
 
 if($create_capability){
     $header = array(1=>'Request ID', 2=>'Request Type', 3=>'Received By', 4=>'Status');

@@ -29,11 +29,14 @@ global $DB,$USER;
 
 $requestId=optional_param('requestid', true, PARAM_INT);;
 $cmid = optional_param('cmid', true, PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($cmid, 'workflow');
 
 $PAGE->set_url(new moodle_url('/mod/workflow/askfurther.php'));
 $PAGE->set_context(\context_system::instance());
-$PAGE->set_title("Ask for Further Details - request ".$requestId);
-$PAGE->set_heading('Ask for Further Details');
+$PAGE->set_title("Ask for Further Details - Request ".$requestId);
+$PAGE->set_heading("Ask for Further Details - Request $requestId");
+$PAGE->navbar->add("Ask for Further Details - Request $requestId");
+$PAGE->set_cm($cm, $course);
 
 require_login();
 

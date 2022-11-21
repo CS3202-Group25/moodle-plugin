@@ -24,7 +24,6 @@ global $DB, $OUTPUT, $PAGE, $USER, $CFG;
 
 require_once (__DIR__ . '/../../config.php');
 require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
-require_once ($CFG->dirroot . '/mod/workflow/classes/dbcontroller.php');
 
 
 $requestid = required_param('requestid', PARAM_INT);
@@ -38,7 +37,6 @@ $PAGE->set_title("View a Request");
 require_login();
 
 $requestController = new requestController();
-$dbController = new dbController();
 
 $request = $DB->get_record('workflow_request', array('requestid'=>$requestid));
 $state = $request->state;
@@ -81,18 +79,6 @@ if($askedmore){
     $hasmorereason = false;
 }
 
-// $files = $DB->get_records('files', array('itemid' => $request->filesid));
-// $sql = "SELECT * FROM {files} WHERE itemid = :itemid AND filesize != 0";
-// $files = $DB->get_records_sql($sql, ['itemid' => $request->filesid]);
-
-
-// $filesurl = [];
-// foreach ($files as $key => $value) {
-//     $url = moodle_url::make_pluginfile_url($value->contextid, $value->component, $value->filearea, $value->itemid, $value->filepath, $value->filename, false);
-//     array_push($filesurl, $url);
-// }
-
-
 $altbuttons=array();
 if($role->roleid === "4"){
     if($request->askedmoredetails == 0) {
@@ -132,12 +118,6 @@ if($role->roleid === "4"){
 }
 
 echo $OUTPUT->header();
-
-//$templateContent = (object) [
-//    'title' => 'View a Request',
-//];
-//
-//echo $OUTPUT->render_from_template('mod_workflow/workflow_heading', $templateContent);
 
 if($request->requesttype == "Extend Deadline"){
     $requestextend = $DB->get_record('workflow_request_extend', array('requestid'=>$requestid));

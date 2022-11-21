@@ -20,18 +20,24 @@
  * @var stdClass $plugin
  */
 
+global $CFG, $DB,$PAGE, $OUTPUT, $USER;
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot."/mod/workflow/classes/form/providefurther.php");
 require_once ($CFG->dirroot . '/mod/workflow/classes/requestcontroller.php');
+require_once ($CFG->dirroot . '/mod/workflow/classes/messagesender.php');
 
 global $DB;
 
 $requestId=optional_param('requestid', true, PARAM_INT);;
 $cmid = optional_param('cmid', true, PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($cmid, 'workflow');
 
 $PAGE->set_url(new moodle_url('/mod/workflow/providefurther.php'));
 $PAGE->set_context(\context_system::instance());
-$PAGE->set_title("Send More Details - request ".$requestId);
+$PAGE->set_title("Send More Details - Request ".$requestId);
+$PAGE->set_heading("Send More Details - Request $requestId");
+$PAGE->navbar->add("Send More Details - Request $requestId");
+$PAGE->set_cm($cm, $course);
 
 require_login();
 
@@ -45,6 +51,7 @@ $form1=new provideFurther();
 $form1->setReqID($requestId);
 
 $requestController = new requestController();
+$messagesender = new \mod_workflow\messageSender();
 
 if($form1->is_cancelled()){
     redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, "You cancelled sending details!");
@@ -69,6 +76,10 @@ if($form1->is_cancelled()){
     $success = $form1->save_file('files', $thisdir . "/files/" . $newdir . "/" . $filename, false);
 
     $requestController->updateDetails($reqID,$details,$filesid);
+
+    $workflowid = $DB->get_record('course_modules', array('id'=>$cmid))->instance;
+    $instructorid = $DB->get_record('workflow', array('id'=> $workflowid))->instructorid;
+    $messagesender->receivedMore($instructorid,"Further details about $reqID are received.",$cmid,$reqID);
 
     redirect($CFG->wwwroot . '/mod/workflow/view.php?id=' . $cmid, 'You submitted send more details form successfully.');
 }
